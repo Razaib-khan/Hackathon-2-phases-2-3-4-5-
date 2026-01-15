@@ -1,0 +1,54 @@
+import React from 'react';
+import TaskList from './TaskList';
+import { Task } from '../../../services/api';
+
+export default {
+  title: 'Components/TaskList',
+  component: TaskList,
+  argTypes: {},
+};
+
+const Template = (args: any) => <TaskList {...args} />;
+
+// Sample tasks for demonstration
+const sampleTasks: Task[] = [
+  {
+    id: '1',
+    title: 'Implement authentication',
+    description: 'Create login and signup functionality with JWT tokens',
+    priority: 'high',
+    status: 'todo',
+    timestamp: new Date('2026-01-10'),
+  },
+  {
+    id: '2',
+    title: 'Design dashboard UI',
+    description: 'Create wireframes and mockups for the dashboard screens',
+    priority: 'medium',
+    status: 'in-progress',
+    timestamp: new Date('2026-01-09'),
+  },
+  {
+    id: '3',
+    title: 'Setup database schema',
+    description: 'Define tables and relationships for the application',
+    priority: 'high',
+    status: 'done',
+    timestamp: new Date('2026-01-08'),
+  },
+  {
+    id: '4',
+    title: 'Write unit tests',
+    description: 'Create comprehensive test suite for all components',
+    priority: 'low',
+    status: 'todo',
+    timestamp: new Date('2026-01-11'),
+  },
+];
+
+export const Default = Template.bind({});
+Default.args = {
+  tasks: sampleTasks,
+  onUpdateTask: (task: Task) => alert(`Update task: ${task.title}`),
+  onDeleteTask: (id: string) => alert(`Delete task with ID: ${id}`),
+};
