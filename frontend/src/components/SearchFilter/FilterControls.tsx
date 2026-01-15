@@ -39,7 +39,7 @@ const FilterControls: React.FC<FilterControlsProps> = ({ onFilterChange }) => {
   };
 
   const clearFilters = () => {
-    const defaultFilters = {
+    const defaultFilters: FilterOptions = {
       priority: 'all',
       status: 'all',
       startDate: '',
