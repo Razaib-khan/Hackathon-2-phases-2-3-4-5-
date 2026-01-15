@@ -18,11 +18,11 @@ const TaskManager: React.FC = () => {
     }
 
     if (filters.startDate) {
-      result = result.filter(task => new Date(task.timestamp) >= new Date(filters.startDate));
+      result = result.filter(task => new Date(task.timestamp) >= new Date(filters.startDate as string));
     }
 
     if (filters.endDate) {
-      result = result.filter(task => new Date(task.timestamp) <= new Date(filters.endDate));
+      result = result.filter(task => new Date(task.timestamp) <= new Date(filters.endDate as string));
     }
 
     setFilteredTasks(result);
