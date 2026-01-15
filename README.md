@@ -113,3 +113,28 @@ A full-stack todo application with CRUD operations, authentication, and search/f
 - Password strength validation
 - Rate limiting for authentication attempts
 - SQL injection and XSS prevention
+
+## Deployment
+
+### Frontend Deployment to GitHub Pages
+
+To deploy the frontend to GitHub Pages:
+
+1. Go to your repository settings
+2. Scroll down to the "Pages" section
+3. Under "Source", select "Deploy from a branch"
+4. Select "main" branch and "/root" folder (or the folder where your built files are located)
+5. Click "Save"
+
+The GitHub Actions workflow will automatically build and deploy the frontend when changes are pushed to the main branch.
+
+### Backend Deployment to Hugging Face
+
+To deploy the backend to Hugging Face Spaces:
+
+1. Create a Hugging Face Space
+2. Add the following secrets to your GitHub repository:
+   - `HF_SPACE_REPO_ID`: Your Hugging Face Space repository ID (e.g., username/space-name)
+   - `HF_USERNAME`: Your Hugging Face username
+   - `HF_TOKEN`: Your Hugging Face access token
+3. The GitHub Actions workflow will automatically sync backend code to your Hugging Face Space when changes are pushed to the main branch.
