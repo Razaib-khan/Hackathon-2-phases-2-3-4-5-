@@ -127,7 +127,20 @@ const TaskForm: React.FC<TaskFormProps> = ({
         });
       }
 
-      onSubmit(result);
+      // Convert ApiTask to TaskFormData for the callback
+      const taskFormData: TaskFormData = {
+        id: result.id,
+        title: result.title,
+        description: result.description || '',
+        priority: result.priority.toLowerCase() as 'critical' | 'high' | 'medium' | 'low',
+        timestamp: result.timestamp,
+        status: result.status ? 'done' : 'todo', // Assuming status is boolean for completion
+        completed: result.status,
+        createdAt: result.created_at,
+        updatedAt: result.updated_at
+      };
+
+      onSubmit(taskFormData);
     } catch (error: any) {
       console.error('Failed to save task:', error);
       let errorMessage = `Failed to ${initialData.id ? 'update' : 'create'} task.`;
