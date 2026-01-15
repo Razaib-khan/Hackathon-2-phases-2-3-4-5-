@@ -5,6 +5,7 @@ import Link from 'next/link';
 import TaskList, { TaskListHandle } from '@/src/components/TaskList/TaskList';
 import TaskForm from '@/src/components/TaskForm/TaskForm';
 import { Task, CreateTaskRequest } from '@/src/services/api';
+import { TaskFormData } from '@/src/components/TaskForm/types';
 import { useAuth } from '@/src/contexts/AuthContext';
 
 const TasksPage = () => {
@@ -70,7 +71,20 @@ const TasksPage = () => {
     }
   };
 
-  const handleFormSubmit = (task: Task) => {
+  const handleFormSubmit = (taskFormData: TaskFormData) => {
+    // Convert TaskFormData to Task object
+    const task: Task = {
+      id: taskFormData.id || '',
+      user_id: userId,
+      title: taskFormData.title,
+      description: taskFormData.description,
+      priority: taskFormData.priority.charAt(0).toUpperCase() + taskFormData.priority.slice(1) as 'Critical' | 'High' | 'Medium' | 'Low',
+      timestamp: taskFormData.timestamp,
+      status: taskFormData.completed || false, // Use the completed field from form data if available
+      created_at: taskFormData.createdAt || new Date().toISOString(),
+      updated_at: taskFormData.updatedAt || new Date().toISOString()
+    };
+
     if (editingTask) {
       handleUpdateTask(task);
     } else {
