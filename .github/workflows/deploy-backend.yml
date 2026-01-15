@@ -1,4 +1,4 @@
-name: Sync Backend to Hugging Face Hub
+name: Deploy Backend to Hugging Face Space
 
 on:
   push:
@@ -6,24 +6,50 @@ on:
   workflow_dispatch:
 
 jobs:
-  sync-to-hf:
+  deploy-to-hf:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
       - name: Install Hugging Face Hub CLI
         run: pip install huggingface_hub
 
-      - name: Sync Backend Code to Hugging Face Hub
-        run: |
-          git clone https://huggingface.co/spaces/${{ secrets.HF_SPACE_REPO_ID }} hf_space
-          cp -r backend/* hf_space/
-          cd hf_space
-          git add .
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git commit -m "Update backend from GitHub" || exit 0  # exit 0 to avoid error if nothing to commit
-          git push
+      - name: Deploy to Hugging Face Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_USERNAME: ${{ secrets.HF_USERNAME }}
+          HF_SPACE_REPO_ID: ${{ secrets.HF_SPACE_REPO_ID }}
+        run: |
+          # Check if HF_SPACE_REPO_ID is provided
+          if [ -z "$HF_SPACE_REPO_ID" ]; then
+            echo "Error: HF_SPACE_REPO_ID secret is not set"
+            exit 1
+          fi
+
+          # Clone the Hugging Face Space repository using the token for authentication
+          git clone https://"$HF_USERNAME":"$HF_TOKEN"@huggingface.co/spaces/"$HF_SPACE_REPO_ID" hf_space
+
+          # Copy backend files to the Hugging Face Space directory
+          cp -r backend/* hf_space/
+
+          # Navigate to the Hugging Face Space directory
+          cd hf_space
+
+          # Configure git
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+
+          # Add all changes
+          git add .
+
+          # Commit changes if there are any
+          git commit -m "Update backend from GitHub" || exit 0  # exit 0 to avoid error if nothing to commit
+
+          # Push changes to Hugging Face Space
+          git push
