@@ -26,10 +26,12 @@ jobs:
           HF_USERNAME: ${{ secrets.HF_USERNAME }}
           HF_SPACE_REPO_ID: ${{ secrets.HF_SPACE_REPO_ID }}
         run: |
-          # Check if HF_SPACE_REPO_ID is provided
-          if [ -z "$HF_SPACE_REPO_ID" ]; then
-            echo "Error: HF_SPACE_REPO_ID secret is not set"
-            exit 1
+          # Check if required secrets are provided
+          if [ -z "$HF_SPACE_REPO_ID" ] || [ -z "$HF_USERNAME" ] || [ -z "$HF_TOKEN" ]; then
+            echo "Warning: Hugging Face deployment secrets are not set."
+            echo "Please set HF_SPACE_REPO_ID, HF_USERNAME, and HF_TOKEN in repository secrets to deploy to Hugging Face."
+            echo "Skipping Hugging Face deployment..."
+            exit 0  # Exit gracefully to allow workflow to complete
           fi
 
           # Clone the Hugging Face Space repository using the token for authentication
