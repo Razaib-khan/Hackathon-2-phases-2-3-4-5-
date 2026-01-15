@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import http from '@/src/services/http';
 
@@ -14,7 +14,6 @@ const ResetPasswordPage = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -39,6 +38,7 @@ const ResetPasswordPage = () => {
       // The actual implementation would be something like:
       /*
       // Extract token from URL query parameters using Next.js hook
+      const searchParams = useSearchParams();
       const token = searchParams.get('token');
 
       const response = await http.post('/api/auth/password/reset', {
