@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import TaskForm, { TaskFormData } from './TaskForm';
+import TaskForm from './TaskForm';
+import { TaskFormData } from './types';
 
 describe('TaskForm', () => {
   const mockOnSubmit = jest.fn();
@@ -10,6 +11,7 @@ describe('TaskForm', () => {
     onSubmit: mockOnSubmit,
     onCancel: mockOnCancel,
     submitButtonText: 'Save Task',
+    userId: 'test-user-id',
   };
 
   beforeEach(() => {
@@ -82,7 +84,7 @@ describe('TaskForm', () => {
       timestamp: new Date().toISOString().slice(0, 16),
     };
 
-    render(<TaskForm {...defaultProps} initialData={initialData} />);
+    render(<TaskForm {...defaultProps} userId="test-user-id" initialData={initialData} />);
 
     expect(screen.getByDisplayValue('Initial Task')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Initial Description')).toBeInTheDocument();

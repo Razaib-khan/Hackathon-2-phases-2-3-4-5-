@@ -1,7 +1,7 @@
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
 
 // Create a base axios instance with common configuration
-const http: AxiosInstance = axios.create({
+const http = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000',
   headers: {
     'Content-Type': 'application/json',
@@ -10,22 +10,22 @@ const http: AxiosInstance = axios.create({
 
 // Add request interceptor to include auth token if available
 http.interceptors.request.use(
-  (config) => {
+  (config: any) => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
+  (error: any) => {
     return Promise.reject(error);
   }
 );
 
 // Add response interceptor to handle common responses
 http.interceptors.response.use(
-  (response) => response,
-  (error) => {
+  (response: any) => response,
+  (error: any) => {
     if (error.response?.status === 401) {
       // Handle unauthorized access - possibly remove token and redirect
       if (typeof window !== 'undefined') {

@@ -9,8 +9,8 @@ const mockTask: Task = {
   title: 'Test Task',
   description: 'This is a test task description',
   priority: 'High',
-  status: 'todo',
-  timestamp: new Date('2023-01-01'),
+  status: false, // Changed from 'todo' to boolean
+  timestamp: new Date('2023-01-01').toISOString(), // Changed to ISO string
 };
 
 describe('TaskItem', () => {
@@ -33,7 +33,6 @@ describe('TaskItem', () => {
 
     expect(screen.getByText('Test Task')).toBeInTheDocument();
     expect(screen.getByText('High')).toBeInTheDocument();
-    expect(screen.getByText('todo')).toBeInTheDocument();
   });
 
   it('shows expanded details when details button is clicked', () => {

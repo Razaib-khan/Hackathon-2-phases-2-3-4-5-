@@ -1,16 +1,20 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import TaskList, { Task } from './TaskList';
+import TaskList from './TaskList';
+import { Task } from '../../services/api';
 
 // Mock task data
 const mockTasks: Task[] = [
   {
     id: '1',
+    user_id: 'test-user-id',
     title: 'Test Task',
     description: 'Test Description',
-    priority: 'high',
-    status: 'todo',
-    timestamp: new Date(),
+    priority: 'High', // Capitalized as per API interface
+    status: false, // Boolean as per API interface
+    timestamp: new Date().toISOString(), // ISO string as per API interface
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
 ];
 

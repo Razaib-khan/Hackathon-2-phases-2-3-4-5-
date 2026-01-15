@@ -48,7 +48,7 @@ const ForgotPasswordPage = () => {
 
       if (response.status === 200) {
         // Security question verified, store the reset token and show the new password form
-        const data = response.data;
+        const data = response.data as { reset_token: string };
         setResetToken(data.reset_token);
 
         setShowNewPasswordForm(true);

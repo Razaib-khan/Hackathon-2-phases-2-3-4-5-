@@ -71,7 +71,7 @@ class AuthService {
   async signup(signupData: SignupData): Promise<AuthResponse> {
     try {
       const response = await http.post('/api/auth/signup', signupData);
-      const { user, token } = response.data;
+      const { user, token } = response.data as AuthResponse;
 
       this.setAuthToken(token);
       this.currentUser = user;
@@ -93,7 +93,7 @@ class AuthService {
   async signin(signinData: SigninData): Promise<AuthResponse> {
     try {
       const response = await http.post('/api/auth/signin', signinData);
-      const { user, token } = response.data;
+      const { user, token } = response.data as AuthResponse;
 
       this.setAuthToken(token);
       this.currentUser = user;
@@ -139,7 +139,7 @@ class AuthService {
         headers: { Authorization: `Bearer ${this.token}` }
       });
 
-      return response.data;
+      return response.data as { message: string };
     } catch (error: any) {
       throw this.handleError(error, 'Password change failed');
     }
@@ -151,7 +151,7 @@ class AuthService {
   async requestPasswordRecovery(recoveryData: PasswordRecoveryData): Promise<{ message: string }> {
     try {
       const response = await http.post('/api/auth/password/recovery', recoveryData);
-      return response.data;
+      return response.data as { message: string };
     } catch (error: any) {
       throw this.handleError(error, 'Password recovery request failed');
     }
@@ -163,7 +163,7 @@ class AuthService {
   async resetPassword(resetData: PasswordResetData): Promise<{ message: string }> {
     try {
       const response = await http.post('/api/auth/password/reset', resetData);
-      return response.data;
+      return response.data as { message: string };
     } catch (error: any) {
       throw this.handleError(error, 'Password reset failed');
     }
@@ -178,17 +178,15 @@ class AuthService {
         throw new Error('User not authenticated');
       }
 
-      const deleteData = { password }; // Create the expected payload
-
-      const response = await http.delete('/api/auth/account', {
-        data: deleteData,
+      const response = await http.post('/api/auth/account/delete', {
+        password,
         headers: { Authorization: `Bearer ${this.token}` }
       });
 
       // Clear auth state after successful account deletion
       this.clearAuthState();
 
-      return response.data;
+      return response.data as { message: string };
     } catch (error: any) {
       throw this.handleError(error, 'Account deletion failed');
     }
@@ -207,14 +205,14 @@ class AuthService {
         headers: { Authorization: `Bearer ${this.token}` }
       });
 
-      this.currentUser = response.data;
+      this.currentUser = response.data as User;
 
       // Also store user in localStorage for consistency with AuthContext
       if (typeof window !== 'undefined') {
         localStorage.setItem('user', JSON.stringify(response.data));
       }
 
-      return response.data;
+      return response.data as User;
     } catch (error: any) {
       throw this.handleError(error, 'Failed to fetch user profile');
     }
@@ -233,14 +231,14 @@ class AuthService {
         headers: { Authorization: `Bearer ${this.token}` }
       });
 
-      this.currentUser = response.data;
+      this.currentUser = response.data as User;
 
       // Also store user in localStorage for consistency with AuthContext
       if (typeof window !== 'undefined') {
         localStorage.setItem('user', JSON.stringify(response.data));
       }
 
-      return response.data;
+      return response.data as User;
     } catch (error: any) {
       throw this.handleError(error, 'Failed to update user profile');
     }
