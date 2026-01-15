@@ -1,0 +1,173 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+.env*
+*.env*
+.env.local
+.env*.local
+dist/
+build/
+*.egg-info/
+.eggs/
+.coverage
+htmlcov/
+.pytest_cache/
+.coverage/
+.nyc_output/
+coverage/
+
+# Next.js
+.next/
+out/
+.next-server/
+.next/static/chunks/
+.next/static/webpack/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+.env
+.envs
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.coverage.xml
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git/modules/
+.pytest_cache/
+.hypothesis/
+.DS_Store
+
+# FastAPI / Backend
+*.db
+*.db-journal
+instance/
+.webassets-cache
+celerybeat-schedule
+celerybeat.pid
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Thumbs.db:encryptable
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Runtime
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# Temporary folders
+tmp/
+temp/
+tmp/
+tmp/**
+temp/**
+tmp/**
+tmp/**
+tmp/**
+
+# Production
+public/
+public-build/
+
+# Environment variables
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Next.js build outputs
+.next/
+out/
+.next-server/
+
+# Database
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Secrets
+secrets/
+*.key
+*.pem
+*.crt
+*.cert
+*.secret
+config/secrets/
+
+# Browsers
+hs_err_pid*
+*.core
+
+# Testing
+coverage/
+.nyc_output/
+.jest/
+jest/
+jest-coverage/
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+.venv
+.env
+.envs
+.pybuild/
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.coverage.xml
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git/modules/
+.pytest_cache/
+.hypothesis/
+.DS_Store

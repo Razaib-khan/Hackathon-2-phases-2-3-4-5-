@@ -1,0 +1,15 @@
+# Hugging Face Space Configuration for AIDO TODO Backend
+runtime:
+  hardware: cpu-basic
+  requirements:
+    - python>=3.9
+    - pip
+  secrets:
+    - name: DATABASE_URL
+      description: Database connection string
+    - name: JWT_SECRET_KEY
+      description: JWT secret key for authentication
+    - name: HF_TOKEN
+      description: Hugging Face API token
+    - name: ACCESS_TOKEN_EXPIRE_MINUTES
+      description: Token expiration time in minutes

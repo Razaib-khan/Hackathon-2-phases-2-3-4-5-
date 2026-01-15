@@ -1,0 +1,15 @@
+# frontend-setup skill
+
+## Description
+Handles the proper Next.js setup with TypeScript, Tailwind CSS, App Router, ESLint, no import alias, and no React Compiler as specified.
+
+## Usage
+This skill creates the Next.js project with the specified configuration.
+
+## Files Created
+- Initializes Next.js project with TypeScript in frontend/
+- Configures Tailwind CSS
+- Sets up App Router structure
+- Configures ESLint
+- Ensures no import aliases
+- Skips React Compiler

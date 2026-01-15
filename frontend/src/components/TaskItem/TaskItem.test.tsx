@@ -1,0 +1,102 @@
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import TaskItem from './TaskItem';
+import { Task } from './TaskItem';
+
+// Mock task data
+const mockTask: Task = {
+  id: '1',
+  title: 'Test Task',
+  description: 'This is a test task description',
+  priority: 'High',
+  status: 'todo',
+  timestamp: new Date('2023-01-01'),
+};
+
+describe('TaskItem', () => {
+  const mockOnUpdateTask = jest.fn();
+  const mockOnDeleteTask = jest.fn();
+
+  beforeEach(() => {
+    mockOnUpdateTask.mockClear();
+    mockOnDeleteTask.mockClear();
+  });
+
+  it('renders task title and description', () => {
+    render(
+      <TaskItem
+        task={mockTask}
+        onUpdateTask={mockOnUpdateTask}
+        onDeleteTask={mockOnDeleteTask}
+      />
+    );
+
+    expect(screen.getByText('Test Task')).toBeInTheDocument();
+    expect(screen.getByText('High')).toBeInTheDocument();
+    expect(screen.getByText('todo')).toBeInTheDocument();
+  });
+
+  it('shows expanded details when details button is clicked', () => {
+    render(
+      <TaskItem
+        task={mockTask}
+        onUpdateTask={mockOnUpdateTask}
+        onDeleteTask={mockOnDeleteTask}
+      />
+    );
+
+    const detailsButton = screen.getByText('Details');
+    fireEvent.click(detailsButton);
+
+    expect(screen.getByText('This is a test task description')).toBeInTheDocument();
+    expect(screen.getByText(/Created:/)).toBeInTheDocument();
+  });
+
+  it('calls onUpdateTask when edit button is clicked', () => {
+    render(
+      <TaskItem
+        task={mockTask}
+        onUpdateTask={mockOnUpdateTask}
+        onDeleteTask={mockOnDeleteTask}
+      />
+    );
+
+    const editButton = screen.getByText('Edit');
+    fireEvent.click(editButton);
+
+    expect(mockOnUpdateTask).toHaveBeenCalledWith(mockTask);
+  });
+
+  it('calls onDeleteTask when delete button is clicked', () => {
+    render(
+      <TaskItem
+        task={mockTask}
+        onUpdateTask={mockOnUpdateTask}
+        onDeleteTask={mockOnDeleteTask}
+      />
+    );
+
+    const deleteButton = screen.getByText('Delete');
+    fireEvent.click(deleteButton);
+
+    expect(mockOnDeleteTask).toHaveBeenCalledWith('1');
+  });
+
+  it('toggles details when details button is clicked twice', () => {
+    render(
+      <TaskItem
+        task={mockTask}
+        onUpdateTask={mockOnUpdateTask}
+        onDeleteTask={mockOnDeleteTask}
+      />
+    );
+
+    const detailsButton = screen.getByText('Details');
+    fireEvent.click(detailsButton);
+
+    expect(screen.getByText('This is a test task description')).toBeInTheDocument();
+
+    fireEvent.click(detailsButton);
+    expect(screen.queryByText('This is a test task description')).not.toBeInTheDocument();
+  });
+});
