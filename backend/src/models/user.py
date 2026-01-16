@@ -68,6 +68,14 @@ class User(UserBase, table=True):
 class UserCreate(UserBase):
     password: str = Field(min_length=8)
 
+    @field_validator('password')
+    @classmethod
+    def validate_password_length(cls, v):
+        # Bcrypt has a 72-byte password length limit
+        if len(v.encode('utf-8')) > 72:
+            raise ValueError('Password cannot be longer than 72 bytes for bcrypt hashing')
+        return v
+
 
 class UserRead(UserBase):
     id: uuid.UUID

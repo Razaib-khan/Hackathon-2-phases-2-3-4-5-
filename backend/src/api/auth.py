@@ -107,6 +107,10 @@ def change_password(
     if not current_password or not new_password:
         raise HTTPException(status_code=400, detail="Current and new passwords are required")
 
+    # Bcrypt has a 72-byte password length limit
+    if len(new_password.encode('utf-8')) > 72:
+        raise HTTPException(status_code=400, detail="New password cannot be longer than 72 bytes")
+
     # Verify old password
     from services.auth_service import authenticate_user
     if not authenticate_user(current_user, current_password):
@@ -128,6 +132,10 @@ def change_password_legacy(
     """
     old_password = password_data.get("old_password")
     new_password = password_data.get("new_password")
+
+    # Bcrypt has a 72-byte password length limit
+    if new_password and len(new_password.encode('utf-8')) > 72:
+        raise HTTPException(status_code=400, detail="New password cannot be longer than 72 bytes")
 
     # Verify old password
     from services.auth_service import authenticate_user
@@ -168,6 +176,10 @@ def reset_password(reset_data: Dict, session: Session = Depends(get_session)):
 
     if not token or not new_password:
         raise HTTPException(status_code=400, detail="Token and new password are required")
+
+    # Bcrypt has a 72-byte password length limit
+    if len(new_password.encode('utf-8')) > 72:
+        raise HTTPException(status_code=400, detail="New password cannot be longer than 72 bytes")
 
     # In a real implementation, we would validate the reset token
     # For now, we'll just update the password for the user associated with the token

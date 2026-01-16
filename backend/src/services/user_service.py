@@ -21,6 +21,10 @@ def create_user(session: Session, user_data: UserCreate) -> User:
     """
     from passlib.context import CryptContext
 
+    # Bcrypt has a 72-byte password length limit
+    if len(user_data.password.encode('utf-8')) > 72:
+        raise ValueError("Password cannot be longer than 72 bytes")
+
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     password_hash = pwd_context.hash(user_data.password)
 
@@ -75,6 +79,10 @@ def update_user_password(session: Session, user_id: str, new_password: str) -> b
     user = session.get(User, user_id)
     if not user:
         return False
+
+    # Bcrypt has a 72-byte password length limit
+    if len(new_password.encode('utf-8')) > 72:
+        raise ValueError("Password cannot be longer than 72 bytes")
 
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     user.password_hash = pwd_context.hash(new_password)
