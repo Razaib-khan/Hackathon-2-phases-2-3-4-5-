@@ -6,8 +6,8 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true, // Required for GitHub Pages since we can't use Next.js Image Optimization
   },
-  basePath: '', // Will be updated based on your GitHub Pages path
-  assetPrefix: '', // Will be updated based on your GitHub Pages path
+  basePath: '/Hackathon-2-phases-2-3-4-5-', // GitHub Pages serves from subdirectory
+  assetPrefix: '/Hackathon-2-phases-2-3-4-5-', // Assets also need to be served from subdirectory
 };
 
 export default nextConfig;
