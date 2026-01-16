@@ -15,23 +15,16 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy project requirements
-COPY backend/requirements.txt .
+COPY requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the backend application files
-COPY backend/src ./src
-COPY backend/api ./api
-COPY backend/models ./models
-COPY backend/database ./database
-COPY backend/middleware ./middleware
-COPY backend/config ./config
-COPY backend/services ./services
-COPY backend/utils ./utils
+# Copy project
+COPY . .
 
 # Expose port
 EXPOSE 8000
 
-# Run the application directly from src.main
+# Run the application
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]

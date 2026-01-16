@@ -16,29 +16,8 @@ fi
 TEMP_DIR=$(mktemp -d)
 echo "Creating temporary directory: $TEMP_DIR"
 
-# Copy only the backend files to the temporary directory
-mkdir -p "$TEMP_DIR"/backend
-cp -r backend/* "$TEMP_DIR"/backend/
-
-# Add the Hugging Face Space configuration
-mkdir -p "$TEMP_DIR"/.hf_space
-cp -r .hf_space/* "$TEMP_DIR"/.hf_space/ 2>/dev/null || echo "No .hf_space directory found, creating basic config..."
-
-# Create a basic config if it doesn't exist
-if [ ! -f "$TEMP_DIR/.hf_space/config.yml" ]; then
-    mkdir -p "$TEMP_DIR/.hf_space"
-    cat > "$TEMP_DIR/.hf_space/config.yml" << EOF
-# Hugging Face Space Configuration for AIDO TODO Backend
-runtime:
-  hardware: cpu-basic
-  requirements:
-    - python>=3.9
-    - pip
-EOF
-fi
-
-# Copy the Dockerfile to the temp directory root (Hugging Face expects it in the root of the space)
-cp backend/Dockerfile "$TEMP_DIR/"
+# Copy the backend files to the temporary directory
+cp -r backend/* "$TEMP_DIR"/
 
 # Display instructions for creating the space using MCP server
 echo "=== HUGGING FACE SPACE CREATION INSTRUCTIONS ==="

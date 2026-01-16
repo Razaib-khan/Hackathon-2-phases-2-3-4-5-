@@ -116,14 +116,11 @@ TEMP_DIR=$(mktemp -d -t hf-space-XXXXXX)
 echo "Created temporary directory for backend: $TEMP_DIR"
 
 # Copy backend files
-mkdir -p "$TEMP_DIR/backend"
-cp -r ../backend/* "$TEMP_DIR/backend/" 2>/dev/null || echo "Backend directory may not exist yet"
+cp -r ../backend/* "$TEMP_DIR/" 2>/dev/null || cp -r backend/* "$TEMP_DIR/" 2>/dev/null || echo "Backend directory not found"
 
 # Copy Dockerfile
-if [ -f "../backend/Dockerfile" ]; then
-    cp ../backend/Dockerfile "$TEMP_DIR/"
-elif [ -f "backend/Dockerfile" ]; then
-    cp backend/Dockerfile "$TEMP_DIR/"
+if [ -f "$TEMP_DIR/Dockerfile" ]; then
+    echo "Dockerfile already copied."
 else
     # Create a basic Dockerfile if none exists
     cat > "$TEMP_DIR/Dockerfile" << EOF
@@ -131,14 +128,14 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY backend/requirements.txt .
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY backend/ .
+COPY . .
 
 EXPOSE 8000
 
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 EOF
 fi
 
