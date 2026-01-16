@@ -2,6 +2,8 @@
 
 A full-stack todo application with CRUD operations, authentication, and search/filter capabilities.
 
+<!-- Republish trigger -->
+
 ## Features
 
 - **User Authentication**: Secure signup, signin, password recovery using security questions
