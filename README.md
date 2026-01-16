@@ -123,7 +123,7 @@ A full-stack todo application with CRUD operations, authentication, and search/f
 To deploy the frontend to GitHub Pages:
 
 1. Update the environment variables for production deployment to point to your Hugging Face backend:
-   - `NEXT_PUBLIC_API_BASE_URL`: Set to your Hugging Face Space URL (e.g., `https://razaib123-todo-backend.hf.space`)
+   - `NEXT_PUBLIC_API_BASE_URL`: Set to your Hugging Face Space URL (e.g., `https://razaib123-hf-space-todo-backend.hf.space`)
    - `NEXT_PUBLIC_BETTER_AUTH_URL`: Set to your Hugging Face Space URL
 2. Go to your repository settings
 3. Scroll down to the "Pages" section
