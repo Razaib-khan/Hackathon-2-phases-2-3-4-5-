@@ -122,11 +122,8 @@ To deploy the frontend to GitHub Pages:
 
 1. Go to your repository settings
 2. Scroll down to the "Pages" section
-3. Under "Source", select "Deploy from a branch"
-4. Select "main" branch and "/root" folder (or the folder where your built files are located)
-5. Click "Save"
-
-The GitHub Actions workflow will automatically build and deploy the frontend when changes are pushed to the main branch.
+3. Under "Source", select "GitHub Actions"
+4. The GitHub Actions workflow will automatically build and deploy the frontend when changes are pushed to the main branch.
 
 ### Backend Deployment to Hugging Face
 
