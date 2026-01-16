@@ -122,10 +122,13 @@ A full-stack todo application with CRUD operations, authentication, and search/f
 
 To deploy the frontend to GitHub Pages:
 
-1. Go to your repository settings
-2. Scroll down to the "Pages" section
-3. Under "Source", select "GitHub Actions"
-4. The GitHub Actions workflow will automatically build and deploy the frontend when changes are pushed to the main branch.
+1. Update the environment variables for production deployment to point to your Hugging Face backend:
+   - `NEXT_PUBLIC_API_BASE_URL`: Set to your Hugging Face Space URL (e.g., `https://razaib123-todo-backend.hf.space`)
+   - `NEXT_PUBLIC_BETTER_AUTH_URL`: Set to your Hugging Face Space URL
+2. Go to your repository settings
+3. Scroll down to the "Pages" section
+4. Under "Source", select "GitHub Actions"
+5. The GitHub Actions workflow will automatically build and deploy the frontend when changes are pushed to the main branch.
 
 ### Backend Deployment to Hugging Face
 
@@ -137,3 +140,5 @@ To deploy the backend to Hugging Face Spaces:
    - `HF_USERNAME`: Your Hugging Face username
    - `HF_TOKEN`: Your Hugging Face access token
 3. The GitHub Actions workflow will automatically sync backend code to your Hugging Face Space when changes are pushed to the main branch.
+
+**Important**: When deploying the frontend to production (GitHub Pages, etc.), ensure that the `NEXT_PUBLIC_API_BASE_URL` environment variable is configured to point to your Hugging Face Space backend URL instead of `http://localhost:8000` to ensure proper API communication.
