@@ -3,7 +3,9 @@ sqlmodel==0.0.22
 uvicorn[standard]==0.32.0
 asyncpg==0.30.0
 passlib[bcrypt]==1.7.4
+bcrypt==3.2.0
 python-jose[cryptography]==3.3.0
+PyJWT==2.9.0
 python-multipart==0.0.20
 alembic==1.13.1
 psycopg2-binary==2.9.9

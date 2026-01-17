@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Link from 'next/link';
 
 interface FormData {
   firstName: string;
@@ -115,9 +116,9 @@ const Signup: React.FC = () => {
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Already have an account?{' '}
-          <a href="/login" className="font-medium text-blue-600 hover:text-blue-500">
+          <Link href="/auth/signin" className="font-medium text-blue-600 hover:text-blue-500">
             Sign in
-          </a>
+          </Link>
         </p>
       </div>
 

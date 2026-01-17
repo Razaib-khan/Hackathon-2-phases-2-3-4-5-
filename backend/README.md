@@ -1,3 +1,13 @@
+---
+title: AIDO TODO Backend
+emoji: 🚀
+colorFrom: blue
+colorTo: yellow
+sdk: docker
+pinned: false
+license: apache-2.0
+---
+
 # AIDO TODO Application Backend
 
 This directory contains the FastAPI backend for the AIDO TODO Application.

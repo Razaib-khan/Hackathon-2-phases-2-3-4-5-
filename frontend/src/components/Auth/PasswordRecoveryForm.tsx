@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Link from 'next/link';
 
 interface PasswordRecoveryFormData {
   email: string;
@@ -153,9 +154,9 @@ const PasswordRecoveryForm: React.FC = () => {
       <div className="mt-6 text-center">
         <p className="text-sm text-gray-600">
           Remember your password?{' '}
-          <a href="/login" className="font-medium text-blue-600 hover:text-blue-500">
+          <Link href="/auth/signin" className="font-medium text-blue-600 hover:text-blue-500">
             Sign in
-          </a>
+          </Link>
         </p>
       </div>
     </div>

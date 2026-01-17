@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface User {
   id: string;
@@ -31,6 +32,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
 
   // Helper to get user's full name
@@ -248,8 +250,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem('user');
     setToken(null);
     setUser(null);
-    // Redirect to signin page after logout
-    window.location.href = '/auth/signin';
+    // Redirect to signin page after logout using Next.js router which respects basePath
+    router.push('/auth/signin');
   };
 
   return (

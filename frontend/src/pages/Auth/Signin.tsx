@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Link from 'next/link';
 
 interface SignInFormData {
   email: string;
@@ -52,9 +53,9 @@ const Signin: React.FC = () => {
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Or{' '}
-            <a href="/signup" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link href="/auth/signup" className="font-medium text-blue-600 hover:text-blue-500">
               create a new account
-            </a>
+            </Link>
           </p>
         </div>
 
@@ -120,9 +121,9 @@ const Signin: React.FC = () => {
             </div>
 
             <div className="text-sm">
-              <a href="/forgot-password" className="font-medium text-blue-600 hover:text-blue-500">
+              <Link href="/auth/forgot-password" className="font-medium text-blue-600 hover:text-blue-500">
                 Forgot your password?
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -153,9 +154,9 @@ const Signin: React.FC = () => {
 
         <div className="text-center text-sm text-gray-500">
           <p>Don't have an account?{' '}
-            <a href="/signup" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link href="/auth/signup" className="font-medium text-blue-600 hover:text-blue-500">
               Sign up
-            </a>
+            </Link>
           </p>
         </div>
       </div>

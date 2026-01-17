@@ -20,16 +20,9 @@ def create_user(session: Session, user_data: UserCreate) -> User:
     Create a new user with hashed password
     """
     from passlib.context import CryptContext
-    import hashlib
-
-    # Handle bcrypt 72-byte password length limit with pre-hashing
-    password_to_hash = user_data.password
-    if len(password_to_hash.encode('utf-8')) > 72:
-        # Pre-hash with SHA-256 to handle passwords longer than 72 bytes securely
-        password_to_hash = hashlib.sha256(password_to_hash.encode('utf-8')).hexdigest()
 
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-    password_hash = pwd_context.hash(password_to_hash)
+    password_hash = pwd_context.hash(user_data.password)
 
     # Create user object
     db_user = User(
@@ -61,20 +54,13 @@ def authenticate_user(session: Session, email: str, password: str) -> Optional[U
     Authenticate user with email and password
     """
     from passlib.context import CryptContext
-    import hashlib
 
     user = get_user_by_email(session, email)
     if not user:
         return None
 
-    # Handle bcrypt 72-byte password length limit with pre-hashing
-    password_to_verify = password
-    if len(password.encode('utf-8')) > 72:
-        # Pre-hash with SHA-256 to handle passwords longer than 72 bytes securely
-        password_to_verify = hashlib.sha256(password.encode('utf-8')).hexdigest()
-
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-    if not pwd_context.verify(password_to_verify, user.password_hash):
+    if not pwd_context.verify(password, user.password_hash):
         return None
 
     return user
@@ -85,20 +71,13 @@ def update_user_password(session: Session, user_id: str, new_password: str) -> b
     Update user password
     """
     from passlib.context import CryptContext
-    import hashlib
 
     user = session.get(User, user_id)
     if not user:
         return False
 
-    # Handle bcrypt 72-byte password length limit with pre-hashing
-    password_to_hash = new_password
-    if len(password_to_hash.encode('utf-8')) > 72:
-        # Pre-hash with SHA-256 to handle passwords longer than 72 bytes securely
-        password_to_hash = hashlib.sha256(password_to_hash.encode('utf-8')).hexdigest()
-
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-    user.password_hash = pwd_context.hash(password_to_hash)
+    user.password_hash = pwd_context.hash(new_password)
 
     session.add(user)
     session.commit()

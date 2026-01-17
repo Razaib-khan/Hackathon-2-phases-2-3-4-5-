@@ -54,16 +54,9 @@ def authenticate_user(user: User, password: str) -> bool:
     Authenticate user with provided password
     """
     from passlib.context import CryptContext
-    import hashlib
-
-    # Handle bcrypt 72-byte password length limit with pre-hashing
-    password_to_verify = password
-    if len(password.encode('utf-8')) > 72:
-        # Pre-hash with SHA-256 to handle passwords longer than 72 bytes securely
-        password_to_verify = hashlib.sha256(password.encode('utf-8')).hexdigest()
 
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-    return pwd_context.verify(password_to_verify, user.password_hash)
+    return pwd_context.verify(password, user.password_hash)
 
 
 def get_current_user(token: str, session) -> Optional[User]:

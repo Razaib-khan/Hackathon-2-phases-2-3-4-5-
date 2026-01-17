@@ -29,9 +29,9 @@ const AccountPage = () => {
   const [deletePassword, setDeletePassword] = useState('');
 
   if (!user) {
-    // For client-side redirect in App Router, we can use window.location
+    // For client-side redirect in App Router, we should use the router
     if (typeof window !== 'undefined') {
-      window.location.href = '/auth/signin';
+      router.push('/auth/signin');
     }
     return null;
   }
