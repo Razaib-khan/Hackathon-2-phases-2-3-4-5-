@@ -38,12 +38,22 @@ Claude must execute the following hooks at the specified times. Each hook script
 | on_prompt | `.claude/hooks/track-prompt.sh` | Track the current prompt and store metadata. |
 | on_skill_start | `.claude/hooks/track-skill-start.sh` | Triggered at the start of a skill execution. |
 | on_skill_end | `.claude/hooks/track-skill-end.sh` | Triggered at the end of a skill execution. |
+| pre_implement | `.claude/hooks/pre-implement-enforce-subagents.sh` | Enforce subagent and skill activation before implementation. Abort if not compliant. |
+| pre_mcp | `.claude/hooks/pre-mcp-enforce.sh` | Ensure MCP tools are referenced in task operations. |
 
 **Guidelines for hook execution:**
 1. Hooks must run **before or after their designated event**, not arbitrarily.
 2. Hooks must be referenced explicitly in the execution instructions. Claude will **not guess**.
 3. Output of hooks is considered authoritative for decision-making during execution.
 4. Failure to run required hooks is considered a critical error.
+5. Enforcement hooks (pre_implement, pre_mcp) must **abort** execution if compliance checks fail.
+
+**Integration with Implementation Process:**
+The enforcement system is integrated into the implementation workflow through the following mechanism:
+- Before any `/sp.implement` execution, the `.claude/hooks/enforce-before-implement.sh` script must be called
+- This script validates all required artifacts and compliance requirements
+- If any check fails, the entire implementation process is aborted
+- The enforcement ensures that subagents, skills, and MCP tools are properly utilized
 
 ---
 
@@ -124,13 +134,23 @@ For every task, Claude **must**:
 ### 8. Prohibited Behavior
 Claude **must not**:
 - Execute tasks directly due to simplicity or convenience.
-- Skip subagent creation for “small” or “obvious” tasks.
+- Skip subagent creation for "small" or "obvious" tasks.
 - Use a subagent outside its defined scope.
 
 ### 9. Reuse and Governance
 - Reuse existing subagents whenever scopes match.
 - Avoid redundant or overlapping subagents.
 - Keep subagent responsibilities narrow, explicit, and testable.
+
+### 10. Enforcement and Validation
+- **Hard enforcement**: During `/sp.implement`, execution will **abort** if no subagent is assigned.
+- **Skill activation required**: At least one relevant skill must be activated and tracked in `.claude/current_skills_activated`.
+- **MCP usage validation**: All backend operations must go through MCP tools; direct ORM/database calls are forbidden during `/sp.implement`.
+- **Artifact validation**: Hooks will validate the existence of:
+  - `.claude/current_subagent_assigned` - tracking assigned subagent
+  - `.claude/current_skills_activated` - tracking active skills
+  - `.skills/active_skills.json` - machine-readable skill tracking
+  - `.claude/plan.txt` - must contain MCP_CALL markers for MCP usage
 
 **Violation of this policy is a breach of execution guarantees.**
 

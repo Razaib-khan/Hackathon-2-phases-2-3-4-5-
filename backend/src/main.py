@@ -21,6 +21,12 @@ from models.task import Task, TaskComplete, TaskCreate, TaskRead, TaskUpdate
 from models.user import User, UserCreate, UserRead, UserUpdate
 from middleware.security import register_security_middleware, sanitize_input
 from config.security import SecurityConfig
+from security.middleware import (
+    SecurityHeadersMiddleware,
+    RateLimitMiddleware,
+    InputValidationMiddleware,
+    SecurityLoggerMiddleware
+)
 
 
 @asynccontextmanager
@@ -37,6 +43,12 @@ app = FastAPI(
     redoc_url="/redoc",
     openapi_url="/openapi.json"
 )
+
+# Add security middleware in order of importance
+app.add_middleware(SecurityLoggerMiddleware)
+app.add_middleware(InputValidationMiddleware)
+app.add_middleware(RateLimitMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
 
 # Add CORS middleware
 app.add_middleware(
@@ -57,10 +69,11 @@ def read_root():
 
 
 # Include API routes
-from .api import auth, tasks
+from .api import auth, tasks, chat
 
 app.include_router(auth.router, prefix="/api/auth", tags=["authentication"])
 app.include_router(tasks.router, prefix="/api", tags=["tasks"])
+app.include_router(chat.router, prefix="/api", tags=["chat"])
 
 if __name__ == "__main__":
     import uvicorn

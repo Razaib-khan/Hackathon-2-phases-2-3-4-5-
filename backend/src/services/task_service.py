@@ -220,3 +220,191 @@ def toggle_task_completion(
     session.refresh(task)
 
     return task
+
+
+def create_tasks_batch(
+    session: Session, user_id: str, tasks_data: List[TaskCreate]
+) -> List[Task]:
+    """
+    Create multiple tasks for a user at once (for AI agent operations)
+    """
+    user_uuid = uuid.UUID(user_id)
+
+    # Verify user exists
+    user = session.get(User, user_uuid)
+    if not user:
+        raise ValueError("User not found")
+
+    created_tasks = []
+    for task_data in tasks_data:
+        db_task = Task(
+            title=task_data.title,
+            description=task_data.description,
+            priority=task_data.priority,
+            timestamp=task_data.timestamp or datetime.utcnow(),
+            status=task_data.status or False,
+            user_id=user_uuid,
+        )
+        session.add(db_task)
+        created_tasks.append(db_task)
+
+    session.commit()
+
+    # Refresh all created tasks to get their IDs
+    for task in created_tasks:
+        session.refresh(task)
+
+    return created_tasks
+
+
+def get_tasks_by_ids(
+    session: Session, user_id: str, task_ids: List[str]
+) -> List[Task]:
+    """
+    Get multiple tasks by their IDs for a user
+    """
+    user_uuid = uuid.UUID(user_id)
+    task_uuids = [uuid.UUID(task_id) for task_id in task_ids]
+
+    # Verify user exists
+    user = session.get(User, user_uuid)
+    if not user:
+        raise ValueError("User not found")
+
+    # Get tasks and verify they belong to the user
+    query = select(Task).options(selectinload(Task.user)).where(
+        Task.id.in_(task_uuids),
+        Task.user_id == user_uuid
+    )
+    tasks = session.exec(query).all()
+
+    return tasks
+
+
+def update_tasks_batch(
+    session: Session, user_id: str, task_updates: List[dict]
+) -> List[Task]:
+    """
+    Update multiple tasks for a user at once (for AI agent operations)
+    """
+    user_uuid = uuid.UUID(user_id)
+
+    # Verify user exists
+    user = session.get(User, user_uuid)
+    if not user:
+        raise ValueError("User not found")
+
+    updated_tasks = []
+    for update_data in task_updates:
+        task_id = update_data.get("id")
+        if not task_id:
+            continue
+
+        task_uuid = uuid.UUID(task_id)
+
+        # Get task and verify it belongs to the user
+        query = select(Task).options(selectinload(Task.user)).where(
+            Task.id == task_uuid,
+            Task.user_id == user_uuid
+        )
+        task = session.exec(query).first()
+
+        if not task:
+            continue
+
+        # Update task with provided data
+        for field, value in update_data.items():
+            if field != "id":  # Don't update the ID
+                if hasattr(task, field):
+                    setattr(task, field, value)
+        task.updated_at = datetime.utcnow()
+
+        session.add(task)
+        updated_tasks.append(task)
+
+    session.commit()
+
+    # Refresh all updated tasks
+    for task in updated_tasks:
+        session.refresh(task)
+
+    return updated_tasks
+
+
+def delete_tasks_batch(
+    session: Session, user_id: str, task_ids: List[str]
+) -> int:
+    """
+    Delete multiple tasks for a user at once (for AI agent operations)
+    """
+    user_uuid = uuid.UUID(user_id)
+    task_uuids = [uuid.UUID(task_id) for task_id in task_ids]
+
+    # Verify user exists
+    user = session.get(User, user_uuid)
+    if not user:
+        raise ValueError("User not found")
+
+    # Get tasks and verify they belong to the user
+    query = select(Task).where(
+        Task.id.in_(task_uuids),
+        Task.user_id == user_uuid
+    )
+    tasks = session.exec(query).all()
+
+    deleted_count = 0
+    for task in tasks:
+        session.delete(task)
+        deleted_count += 1
+
+    session.commit()
+    return deleted_count
+
+
+def update_tasks_status_batch(
+    session: Session, user_id: str, task_status_updates: List[dict]
+) -> List[Task]:
+    """
+    Update status of multiple tasks for a user at once (for AI agent operations)
+    """
+    user_uuid = uuid.UUID(user_id)
+
+    # Verify user exists
+    user = session.get(User, user_uuid)
+    if not user:
+        raise ValueError("User not found")
+
+    updated_tasks = []
+    for update_data in task_status_updates:
+        task_id = update_data.get("id")
+        status = update_data.get("status")
+
+        if not task_id or status is None:
+            continue
+
+        task_uuid = uuid.UUID(task_id)
+
+        # Get task and verify it belongs to the user
+        query = select(Task).options(selectinload(Task.user)).where(
+            Task.id == task_uuid,
+            Task.user_id == user_uuid
+        )
+        task = session.exec(query).first()
+
+        if not task:
+            continue
+
+        # Update task status
+        task.status = status
+        task.updated_at = datetime.utcnow()
+
+        session.add(task)
+        updated_tasks.append(task)
+
+    session.commit()
+
+    # Refresh all updated tasks
+    for task in updated_tasks:
+        session.refresh(task)
+
+    return updated_tasks

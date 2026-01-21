@@ -65,6 +65,9 @@ class Task(TaskBase, table=True):
     # Relationship to user
     user: "User" = Relationship(back_populates="tasks")
 
+    # Relationship to task operation logs
+    task_operation_logs: list["TaskOperationLog"] = Relationship(back_populates="tasks")
+
 
 class TaskCreate(TaskBase):
     pass
