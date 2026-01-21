@@ -1,32 +1,16 @@
 version: '3.8'
 
 services:
-  backend:
+  app:
     build:
       context: ./backend
     ports:
-      - "8000:8000"
+      - "7860:7860"
     environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///./todo_app.db}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-default_secret_key}
       - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
-    restart: unless-stopped
-    networks:
-      - app-network
-
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./frontend/out:/usr/share/nginx/html
-    depends_on:
-      - backend
-    restart: unless-stopped
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - AIDO_MCP_URL=${AIDO_MCP_URL:-stdio://}
+      - PORT=7860
+    command: uvicorn src.main:app --host 0.0.0.0 --port 7860

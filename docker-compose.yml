@@ -7,9 +7,11 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=${DATABASE_URL:-postgresql://user:password@localhost:5432/todo_db}
+      - DATABASE_URL=${DATABASE_URL:-postgresql://user:password@db:5432/todo_db}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:-default_secret_key}
       - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - AIDO_MCP_URL=${AIDO_MCP_URL:-stdio://}
     depends_on:
       - db
     networks:
@@ -21,7 +23,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_BASE_URL=http://backend:8000
+      - NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
     depends_on:
       - backend
     networks:

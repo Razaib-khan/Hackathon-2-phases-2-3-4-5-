@@ -12,6 +12,8 @@ WORKDIR /app
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         postgresql-client \
+        gcc \
+        g++ \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy project requirements
@@ -20,11 +22,14 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Install additional dependencies for the AI agent and MCP
+RUN pip install --no-cache-dir openai mcp-sdk python-multipart
+
 # Copy the application files
 COPY . .
 
 # Expose port
-EXPOSE 7860
+EXPOSE 8000
 
 # Run the application directly from the main module which handles PORT env var
-CMD ["python", "-c", "from src.main import app; import uvicorn; import os; port = int(os.environ.get('PORT', 7860)); uvicorn.run(app, host='0.0.0.0', port=port)"]
+CMD ["sh", "-c", "python -m src.mcp_server.server & python -c 'import uvicorn; import os; from src.main import app; port = int(os.environ.get(\"PORT\", 8000)); uvicorn.run(app, host=\"0.0.0.0\", port=port)'"]
