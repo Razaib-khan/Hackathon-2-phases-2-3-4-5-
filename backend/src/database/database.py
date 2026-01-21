@@ -66,6 +66,9 @@ def create_db_and_tables():
     # This ensures the tables are created with all relationships
     from models.task import Task  # noqa: F401
     from models.user import User  # noqa: F401
+    from models.chat_session import ChatSession  # noqa: F401
+    from models.chat_message import ChatMessage  # noqa: F401
+    from models.task_operation_log import TaskOperationLog  # noqa: F401
     from sqlmodel import SQLModel
 
     try:

@@ -2,11 +2,11 @@
 
 import React, { useState, useRef } from 'react';
 import Link from 'next/link';
-import TaskList, { TaskListHandle } from '@/src/components/TaskList/TaskList';
-import TaskForm from '@/src/components/TaskForm/TaskForm';
-import { Task, CreateTaskRequest } from '@/src/services/api';
-import { TaskFormData } from '@/src/components/TaskForm/types';
-import { useAuth } from '@/src/contexts/AuthContext';
+import TaskList, { TaskListHandle } from '@/components/TaskList/TaskList';
+import TaskForm from '@/components/TaskForm/TaskForm';
+import { Task, CreateTaskRequest } from '@/services/api';
+import { TaskFormData } from '@/components/TaskForm/types';
+import { useAuth } from '@/contexts/AuthContext';
 
 const TasksPage = () => {
   const { user, logout, getUserFullName, loading } = useAuth();

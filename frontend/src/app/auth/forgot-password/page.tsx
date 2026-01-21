@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import http from '@/src/services/http';
+import http from '@/services/http';
 
 const ForgotPasswordPage = () => {
   const [formData, setFormData] = useState({

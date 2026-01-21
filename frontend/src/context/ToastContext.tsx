@@ -1,4 +1,6 @@
 // context/ToastContext.tsx
+"use client";
+
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import ToastNotifications from '@/components/ToastNotifications';

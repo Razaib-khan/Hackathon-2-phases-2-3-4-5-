@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { toggleTaskCompletion, deleteTask as deleteTaskAPI, updateTask as updateTaskAPI, Task as TaskType } from '@/src/services/api';
-import ConfirmationModal from '@/src/components/Modal/ConfirmationModal';
+import { toggleTaskCompletion, deleteTask as deleteTaskAPI, updateTask as updateTaskAPI, Task as TaskType } from '@/services/api';
+import ConfirmationModal from '@/components/Modal/ConfirmationModal';
 
 // Define the task type based on API contract
 export interface Task {

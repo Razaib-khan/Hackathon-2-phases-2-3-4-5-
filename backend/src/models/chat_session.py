@@ -19,6 +19,7 @@ class ChatSession(ChatSessionBase, table=True):
 
     # Relationships
     messages: list["ChatMessage"] = Relationship(back_populates="session")
+    task_operations: list["TaskOperationLog"] = Relationship(back_populates="session")
 
     # Update the updated_at timestamp automatically
     def __setattr__(self, name, value):

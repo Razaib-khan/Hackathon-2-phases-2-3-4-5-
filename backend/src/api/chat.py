@@ -8,6 +8,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
 from uuid import UUID
+from sqlalchemy import select
 
 import sys
 import os
@@ -27,6 +28,8 @@ from services.chat_service import (
 from utils.validation import validate_user_id
 from utils.auth import get_current_user
 from middleware.security import limiter
+from mcp_server.integration import AIAgentMCPIntegration
+from mcp_server.agent import AIDOTodoAgent
 
 router = APIRouter()
 
@@ -105,8 +108,50 @@ def get_chat_messages(
     }
 
 
+@router.get("/chat/sessions/{session_id}/operation-logs", response_model=dict)
+def get_task_operation_logs(
+    session_id: UUID,
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
+    """
+    Retrieve task operation logs for a specific chat session
+    """
+    # Verify user has access to this session
+    chat_session = get_session_by_id(session, str(session_id))
+    if not chat_session or str(chat_session.user_id) != str(current_user.id):
+        raise HTTPException(status_code=403, detail="Not authorized to access this session")
+
+    # Import the model
+    from models.task_operation_log import TaskOperationLog
+
+    # Query the task operation logs for this session
+    statement = select(TaskOperationLog).where(
+        TaskOperationLog.session_id == str(session_id)
+    ).order_by(TaskOperationLog.timestamp.desc())
+
+    operation_logs = session.exec(statement).all()
+
+    # Convert to dict format
+    logs_list = []
+    for log in operation_logs:
+        log_dict = {
+            "id": str(log.id),
+            "operation_type": log.operation_type,
+            "task_ids": log.task_ids,
+            "result": log.result,
+            "timestamp": log.timestamp.isoformat(),
+        }
+        logs_list.append(log_dict)
+
+    return {
+        "operation_logs": logs_list,
+        "total": len(logs_list)
+    }
+
+
 @router.post("/chat/messages", response_model=dict)
-def send_message(
+async def send_message(
     message_data: dict,
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
@@ -142,13 +187,22 @@ def send_message(
         content=content
     )
 
-    # TODO: Here would be the integration with the AI agent and MCP server
-    # For now, returning the user message and a placeholder response
+    # Initialize the AI agent and integration
+    agent = AIDOTodoAgent()
+    integration = AIAgentMCPIntegration(agent)
+
+    # Run the AI agent with MCP integration to get a response
+    agent_response_content = await integration.run_ai_agent_with_mcp_integration(
+        user_id=str(current_user.id),
+        user_message=content
+    )
+
+    # Save the agent's response
     agent_response = save_message(
         session=session,
         session_id=str(session_id),
         sender_type="agent",
-        content="This is a placeholder response. The AI agent integration will be implemented in the next phase."
+        content=agent_response_content
     )
 
     return {

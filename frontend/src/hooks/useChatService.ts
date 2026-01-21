@@ -1,6 +1,6 @@
 // hooks/useChatService.ts
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from './useAuth'; // Assuming we have an auth hook
+import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/context/ToastContext';
 
 interface ChatSession {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TaskFormData, TaskFormProps } from './types';
-import { createTask, updateTask, Task as ApiTask } from '@/src/services/api';
+import { createTask, updateTask, Task as ApiTask } from '@/services/api';
 
 // Helper function to convert Date to datetime-local format (YYYY-MM-DDTHH:mm)
 const formatDateForInput = (dateString?: string): string => {

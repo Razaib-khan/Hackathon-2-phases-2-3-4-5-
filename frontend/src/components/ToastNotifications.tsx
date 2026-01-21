@@ -1,4 +1,6 @@
 // components/ToastNotifications.tsx
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { AlertCircle, CheckCircle2, Info, X } from 'lucide-react';
 

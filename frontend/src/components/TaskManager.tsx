@@ -8,7 +8,7 @@ import {
   toggleTaskCompletion,
   Task,
   CreateTaskRequest
-} from '@/src/services/api';
+} from '@/services/api';
 
 const TaskManager = ({ userId }: { userId: string }) => {
   const [tasks, setTasks] = useState<Task[]>([]);

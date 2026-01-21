@@ -8,7 +8,7 @@ import {
   deleteTask,
   toggleTaskCompletion,
   Task
-} from '@/src/services/api';
+} from '@/services/api';
 
 const TestPage = () => {
   const [userId, setUserId] = useState('test-user-123');
