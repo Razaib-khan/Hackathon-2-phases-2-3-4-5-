@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from '../utils/theme';
 import { AuthProvider } from '../contexts/AuthContext';
-import ChatWidget from '@/components/ChatWidget';
+import ConditionalChatWidget from '@/components/ConditionalChatWidget';
 import { ToastProvider } from '@/context/ToastContext';
 import { ChatProvider } from '@/context/ChatContext';
 
@@ -37,7 +37,7 @@ export default function RootLayout({
             <ChatProvider>
               <ToastProvider>
                 {children}
-                <ChatWidget />
+                <ConditionalChatWidget />
               </ToastProvider>
             </ChatProvider>
           </ThemeProvider>
