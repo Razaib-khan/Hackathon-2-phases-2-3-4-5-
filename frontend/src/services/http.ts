@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create a base axios instance with common configuration
 const http = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'https://razaib123-todo-backend.hf.space',
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'https://razaib123-aido-todo-app.hf.space',
   headers: {
     'Content-Type': 'application/json',
   },
