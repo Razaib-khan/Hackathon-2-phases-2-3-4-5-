@@ -66,7 +66,7 @@ const AccountPage = () => {
 
     try {
       // Call the backend API to change the password
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'}/api/auth/password/change`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://razaib123-aido-todo-app.hf.space'}/api/auth/password/change`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
