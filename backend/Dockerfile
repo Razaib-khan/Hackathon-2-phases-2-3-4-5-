@@ -23,7 +23,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install additional dependencies for the AI agent and MCP
-RUN pip install --no-cache-dir openai mcp-sdk python-multipart
+RUN pip install --no-cache-dir openai python-multipart
 
 # Copy the application files
 COPY . .
