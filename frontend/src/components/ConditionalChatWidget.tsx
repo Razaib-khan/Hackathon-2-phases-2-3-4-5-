@@ -10,7 +10,7 @@ export default function ConditionalChatWidget() {
 
   useEffect(() => {
     // Show chat widget only on /tasks and /account routes and their subroutes
-    if (pathname.startsWith('/tasks') || pathname.startsWith('/account')) {
+    if (pathname && (pathname.startsWith('/tasks') || pathname.startsWith('/account'))) {
       setShouldShowChat(true);
     } else {
       setShouldShowChat(false);
