@@ -43,7 +43,7 @@ export const useChatService = () => {
   const loadSessions = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/chat/sessions', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://razaib123-aido-todo-app.hf.space'}/api/chat/sessions`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ export const useChatService = () => {
   const loadSession = async (sessionId: string) => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/chat/sessions/${sessionId}/messages`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://razaib123-aido-todo-app.hf.space'}/api/chat/sessions/${sessionId}/messages`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -103,7 +103,7 @@ export const useChatService = () => {
   const createNewSession = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/chat/sessions', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://razaib123-aido-todo-app.hf.space'}/api/chat/sessions`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -146,7 +146,7 @@ export const useChatService = () => {
       setIsLoading(true);
 
       // Send message to backend
-      const response = await fetch('/api/chat/messages', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://razaib123-aido-todo-app.hf.space'}/api/chat/messages`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -182,7 +182,7 @@ export const useChatService = () => {
   // Get task operation logs for a session
   const getTaskOperationLogs = async (sessionId: string) => {
     try {
-      const response = await fetch(`/api/chat/sessions/${sessionId}/operation-logs`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://razaib123-aido-todo-app.hf.space'}/api/chat/sessions/${sessionId}/operation-logs`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
