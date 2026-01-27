@@ -203,6 +203,53 @@ export const useChatService = () => {
     }
   };
 
+  // Delete a chat session
+  const deleteSession = async (sessionId: string) => {
+    try {
+      setIsLoading(true);
+
+      // Use DELETE method to remove the session
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://razaib123-aido-todo-app.hf.space'}/api/chat/sessions/${sessionId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        // Remove the session from the local state
+        setSessions(prev => prev.filter(session => session.id !== sessionId));
+
+        // If the deleted session was the current one, clear the current session and messages
+        if (currentSessionId === sessionId) {
+          setCurrentSessionId(null);
+          setMessages([]);
+
+          // Load the first available session if there are any remaining
+          if (sessions.length > 1) {
+            const remainingSessions = sessions.filter(session => session.id !== sessionId);
+            if (remainingSessions.length > 0) {
+              await loadSession(remainingSessions[0].id);
+            }
+          }
+        }
+
+        showToast('success', 'Chat session deleted successfully');
+        return true;
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to delete chat session');
+      }
+    } catch (error: any) {
+      console.error('Error deleting chat session:', error);
+      showToast('error', error.message || 'Failed to delete chat session');
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Helper function to format dates
   const formatDate = useCallback((dateString: string) => {
     return new Date(dateString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -218,6 +265,7 @@ export const useChatService = () => {
     loadSession,
     loadSessions,
     getTaskOperationLogs,
+    deleteSession, // Add the deleteSession function to the return object
     formatDate,
   };
 };
