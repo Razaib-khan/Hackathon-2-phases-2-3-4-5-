@@ -24,6 +24,8 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
     sendMessage,
     createNewSession,
     loadSession,
+    loadSessions,
+    updateSessionTitle,
     formatDate
   } = useChatService();
 
@@ -48,7 +50,8 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
   };
 
   const handleNewChat = async () => {
-    await createNewSession();
+    const title = prompt("Enter a name for this conversation:", "New Conversation");
+    await createNewSession(title || "New Conversation");
   };
 
   return (
@@ -76,17 +79,30 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
       <div className="border-b border-gray-200 bg-gray-50 p-2 overflow-x-auto">
         <div className="flex space-x-2">
           {sessions.map((session) => (
-            <button
-              key={session.id}
-              onClick={() => loadSession(session.id)}
-              className={`px-3 py-1 text-sm rounded-full whitespace-nowrap ${
-                session.id === currentSessionId
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              {session.title.substring(0, 20)}{session.title.length > 20 ? '...' : ''}
-            </button>
+            <div key={session.id} className="relative group">
+              <button
+                onClick={() => loadSession(session.id)}
+                className={`px-3 py-1 text-sm rounded-full whitespace-nowrap ${
+                  session.id === currentSessionId
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                {session.title.substring(0, 20)}{session.title.length > 20 ? '...' : ''}
+              </button>
+              <button
+                onClick={() => {
+                  const newTitle = prompt("Rename this conversation:", session.title);
+                  if (newTitle) {
+                    updateSessionTitle(session.id, newTitle);
+                  }
+                }}
+                className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity bg-blue-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs hover:bg-blue-600"
+                title="Rename conversation"
+              >
+                ✏
+              </button>
+            </div>
           ))}
         </div>
       </div>

@@ -100,7 +100,7 @@ export const useChatService = () => {
   };
 
   // Create a new chat session
-  const createNewSession = async () => {
+  const createNewSession = async (title: string = 'New Conversation') => {
     try {
       setIsLoading(true);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://razaib123-aido-todo-app.hf.space'}/api/chat/sessions`, {
@@ -109,7 +109,7 @@ export const useChatService = () => {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ title: 'New Conversation' }),
+        body: JSON.stringify({ title }),
       });
 
       if (response.ok) {
@@ -155,15 +155,17 @@ export const useChatService = () => {
         body: JSON.stringify({
           session_id: currentSessionId,
           content,
-          sender_type: 'user',
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
 
-        // Add both user and agent messages to the local state
-        setMessages(prev => [...prev, data.user_message, data.agent_response]);
+        // Reload messages to ensure we have the latest state from the backend
+        // This addresses the issue where changes made by the agent weren't appearing automatically
+        if (currentSessionId) {
+          await loadSession(currentSessionId);
+        }
 
         return data;
       } else {
@@ -250,9 +252,43 @@ export const useChatService = () => {
     }
   };
 
+  // Update a chat session title
+  const updateSessionTitle = async (sessionId: string, newTitle: string) => {
+    try {
+      setIsLoading(true);
+
+      // Since the backend doesn't have a direct endpoint to update session titles,
+      // we'll update the local state only. A full implementation would require
+      // a PUT/PATCH endpoint on the backend
+      setSessions(prev => prev.map(session =>
+        session.id === sessionId
+          ? {...session, title: newTitle}
+          : session
+      ));
+
+      return true;
+    } catch (error: any) {
+      console.error('Error updating session title:', error);
+      showToast('error', error.message || 'Failed to update session title');
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Helper function to format dates
   const formatDate = useCallback((dateString: string) => {
-    return new Date(dateString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        // Return a default string if the date is invalid
+        return '--:--';
+      }
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch (error) {
+      // Return a default string if there's an error parsing the date
+      return '--:--';
+    }
   }, []);
 
   return {
@@ -266,6 +302,7 @@ export const useChatService = () => {
     loadSessions,
     getTaskOperationLogs,
     deleteSession, // Add the deleteSession function to the return object
+    updateSessionTitle, // Add the updateSessionTitle function to the return object
     formatDate,
   };
 };
