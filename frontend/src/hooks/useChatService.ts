@@ -170,15 +170,35 @@ export const useChatService = () => {
         }
 
         // Check if agent response indicates task operations were performed
-        // by looking for keywords that suggest CRUD operations on tasks
+        // by looking for patterns that suggest CRUD operations on tasks
         const agentResponseContent = data?.agent_response?.content?.toLowerCase() || '';
-        const taskOperationKeywords = [
-          'task', 'create', 'add', 'new', 'delete', 'remove', 'update', 'change', 'modify',
-          'complete', 'done', 'finished', 'mark', 'status', 'priority', 'edit'
+
+        // Regular expressions to catch various verb forms and patterns
+        const taskOperationPatterns = [
+          /\btasks?\b/,                    // matches "task" or "tasks"
+          /\bcreat\w*/,                   // matches "create", "creates", "created", "creating"
+          /\badd\w*/,                     // matches "add", "adds", "added", "adding"
+          /\bnew\b/,                      // matches "new"
+          /\bdelet\w*/,                   // matches "delete", "deletes", "deleted", "deleting"
+          /\bremov\w*/,                   // matches "remove", "removes", "removed", "removing"
+          /\bupdat\w*/,                   // matches "update", "updates", "updated", "updating"
+          /\bchang\w*/,                   // matches "change", "changes", "changed", "changing"
+          /\bmodif\w*/,                   // matches "modify", "modifies", "modified", "modifying"
+          /\bcomplet\w*/,                 // matches "complete", "completes", "completed", "completing"
+          /\bdone\b/,                     // matches "done"
+          /\bfinish\w*/,                  // matches "finish", "finishes", "finished", "finishing"
+          /\bmark\w*/,                    // matches "mark", "marks", "marked", "marking"
+          /\bstatu\w*/,                   // matches "status", "statuses"
+          /\bpriorit\w*/,                 // matches "priority", "priorities"
+          /\bedit\w*/,                    // matches "edit", "edits", "edited", "editing"
+          /\bsav\w*/,                     // matches "save", "saves", "saved", "saving"
+          /\bassign\w*/,                  // matches "assign", "assigns", "assigned", "assigning"
+          /\bset\b/,                      // matches "set" (as in "set priority")
+          /\bmanag\w*/                    // matches "manage", "manages", "managed", "managing"
         ];
 
-        const hasTaskOperations = taskOperationKeywords.some(keyword =>
-          agentResponseContent.includes(keyword)
+        const hasTaskOperations = taskOperationPatterns.some(pattern =>
+          pattern.test(agentResponseContent)
         );
 
         // Trigger task refresh if agent response suggests task operations were performed
