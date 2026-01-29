@@ -351,10 +351,9 @@ export const useChatService = () => {
   }, []);
 
   // Function to trigger task list refresh when agent performs operations
-  const triggerTaskRefresh = () => {
-    // This function can be used by components to signal that tasks should be refreshed
-    // In a real implementation, this might dispatch an event or update a shared state
-    console.log('Task refresh triggered by AI agent operations');
+  const triggerTaskRefreshLocally = () => {
+    // This function triggers the event emitter to notify other components
+    triggerTaskRefresh();
   };
 
   return {
@@ -370,6 +369,6 @@ export const useChatService = () => {
     deleteSession, // Add the deleteSession function to the return object
     updateSessionTitle, // Add the updateSessionTitle function to the return object
     formatDate,
-    triggerTaskRefresh,
+    triggerTaskRefresh: triggerTaskRefreshLocally,
   };
 };
