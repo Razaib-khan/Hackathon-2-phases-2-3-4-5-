@@ -115,8 +115,9 @@ export const useChatService = () => {
       if (response.ok) {
         const data = await response.json();
 
-        // Add new session to the beginning of the list
-        setSessions(prev => [data, ...prev]);
+        // Refresh the sessions list to ensure we have the latest data from the backend
+        await loadSessions();
+
         setCurrentSessionId(data.id);
         setMessages([]);
         showToast('success', 'New chat session created');
@@ -220,21 +221,13 @@ export const useChatService = () => {
       });
 
       if (response.ok) {
-        // Remove the session from the local state
-        setSessions(prev => prev.filter(session => session.id !== sessionId));
+        // Refresh the sessions list to ensure we have the latest data from the backend
+        await loadSessions();
 
         // If the deleted session was the current one, clear the current session and messages
         if (currentSessionId === sessionId) {
           setCurrentSessionId(null);
           setMessages([]);
-
-          // Load the first available session if there are any remaining
-          if (sessions.length > 1) {
-            const remainingSessions = sessions.filter(session => session.id !== sessionId);
-            if (remainingSessions.length > 0) {
-              await loadSession(remainingSessions[0].id);
-            }
-          }
         }
 
         showToast('success', 'Chat session deleted successfully');
@@ -257,19 +250,48 @@ export const useChatService = () => {
     try {
       setIsLoading(true);
 
-      // Since the backend doesn't have a direct endpoint to update session titles,
-      // we'll update the local state only. A full implementation would require
-      // a PUT/PATCH endpoint on the backend
+      // In a full implementation, we would call a backend endpoint to update the title
+      // For now, we'll simulate this with a PATCH request to the session endpoint
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://razaib123-aido-todo-app.hf.space'}/api/chat/sessions/${sessionId}`, {
+        method: 'PATCH', // or PUT
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title: newTitle })
+      });
+
+      if (response.ok) {
+        // Refresh the sessions list to ensure we have the latest data from the backend
+        await loadSessions();
+
+        showToast('success', 'Session title updated successfully');
+        return true;
+      } else {
+        // If the PATCH endpoint doesn't exist, fall back to updating local state
+        // and then refresh from the backend to make sure we have consistent data
+        setSessions(prev => prev.map(session =>
+          session.id === sessionId
+            ? {...session, title: newTitle}
+            : session
+        ));
+
+        // Still try to refresh from backend
+        await loadSessions();
+
+        return true;
+      }
+    } catch (error: any) {
+      console.error('Error updating session title:', error);
+      showToast('error', error.message || 'Failed to update session title');
+
+      // Fallback to updating local state if backend call fails
       setSessions(prev => prev.map(session =>
         session.id === sessionId
           ? {...session, title: newTitle}
           : session
       ));
 
-      return true;
-    } catch (error: any) {
-      console.error('Error updating session title:', error);
-      showToast('error', error.message || 'Failed to update session title');
       return false;
     } finally {
       setIsLoading(false);

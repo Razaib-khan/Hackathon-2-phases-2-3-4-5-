@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Send, X, Bot, User } from 'lucide-react';
 import { useChatService } from '@/hooks/useChatService';
+import ConfirmDialog from '@/components/ui/confirm-dialog';
+import InputDialog from '@/components/ui/input-dialog';
 
 interface ChatInterfaceProps {
   onClose: () => void;
@@ -15,6 +17,9 @@ interface ChatInterfaceProps {
 const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
   const [inputValue, setInputValue] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [showNewChatDialog, setShowNewChatDialog] = useState(false);
+  const [showRenameDialog, setShowRenameDialog] = useState<{sessionId: string | null, title: string}>({sessionId: null, title: ''});
+  const [showDeleteDialog, setShowDeleteDialog] = useState<{sessionId: string | null, title: string}>({sessionId: null, title: ''});
 
   const {
     messages,
@@ -51,8 +56,22 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
   };
 
   const handleNewChat = async () => {
-    const title = prompt("Enter a name for this conversation:", "New Conversation");
-    await createNewSession(title || "New Conversation");
+    setShowNewChatDialog(true);
+  };
+
+  const handleCreateNewSession = (title: string) => {
+    createNewSession(title || "New Conversation");
+    setShowNewChatDialog(false);
+  };
+
+  const handleRenameSession = (sessionId: string, title: string) => {
+    updateSessionTitle(sessionId, title);
+    setShowRenameDialog({sessionId: null, title: ''});
+  };
+
+  const handleDeleteSession = (sessionId: string) => {
+    deleteSession(sessionId);
+    setShowDeleteDialog({sessionId: null, title: ''});
   };
 
   return (
@@ -95,10 +114,7 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    const newTitle = prompt("Rename this conversation:", session.title);
-                    if (newTitle) {
-                      updateSessionTitle(session.id, newTitle);
-                    }
+                    setShowRenameDialog({sessionId: session.id, title: session.title});
                   }}
                   className="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-blue-600"
                   title="Rename conversation"
@@ -108,9 +124,7 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (confirm(`Are you sure you want to delete the conversation "${session.title}"?`)) {
-                      deleteSession(session.id);
-                    }
+                    setShowDeleteDialog({sessionId: session.id, title: session.title});
                   }}
                   className="bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
                   title="Delete conversation"
@@ -180,6 +194,41 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
           AI Assistant can help you manage your tasks • Powered by OpenAI
         </p>
       </form>
+
+      {/* New Chat Dialog */}
+      <InputDialog
+        isOpen={showNewChatDialog}
+        onClose={() => setShowNewChatDialog(false)}
+        onConfirm={handleCreateNewSession}
+        title="Start New Conversation"
+        placeholder="Enter conversation name"
+        initialValue="New Conversation"
+        confirmText="Create"
+        cancelText="Cancel"
+      />
+
+      {/* Rename Dialog */}
+      <InputDialog
+        isOpen={!!showRenameDialog.sessionId}
+        onClose={() => setShowRenameDialog({sessionId: null, title: ''})}
+        onConfirm={(value) => handleRenameSession(showRenameDialog.sessionId!, value)}
+        title="Rename Conversation"
+        placeholder="Enter new name"
+        initialValue={showRenameDialog.title}
+        confirmText="Rename"
+        cancelText="Cancel"
+      />
+
+      {/* Delete Dialog */}
+      <ConfirmDialog
+        isOpen={!!showDeleteDialog.sessionId}
+        onClose={() => setShowDeleteDialog({sessionId: null, title: ''})}
+        onConfirm={() => handleDeleteSession(showDeleteDialog.sessionId!)}
+        title="Delete Conversation"
+        message={`Are you sure you want to delete the conversation "${showDeleteDialog.title}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
 };
