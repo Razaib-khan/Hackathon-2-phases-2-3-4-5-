@@ -169,9 +169,22 @@ export const useChatService = () => {
           await loadSession(currentSessionId);
         }
 
-        // Trigger task refresh in case the agent performed any task operations
-        // This ensures the task list updates automatically when agent makes changes
-        triggerTaskRefresh();
+        // Check if agent response indicates task operations were performed
+        // by looking for keywords that suggest CRUD operations on tasks
+        const agentResponseContent = data?.agent_response?.content?.toLowerCase() || '';
+        const taskOperationKeywords = [
+          'task', 'create', 'add', 'new', 'delete', 'remove', 'update', 'change', 'modify',
+          'complete', 'done', 'finished', 'mark', 'status', 'priority', 'edit'
+        ];
+
+        const hasTaskOperations = taskOperationKeywords.some(keyword =>
+          agentResponseContent.includes(keyword)
+        );
+
+        // Trigger task refresh if agent response suggests task operations were performed
+        if (hasTaskOperations) {
+          triggerTaskRefresh();
+        }
 
         return data;
       } else {
