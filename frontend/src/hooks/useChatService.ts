@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import { triggerTaskRefresh } from '@/utils/eventEmitter';
+import { triggerTaskRefresh } from '@/utils/taskRefreshManager';
 
 interface ChatSession {
   id: string;
@@ -351,8 +351,7 @@ export const useChatService = () => {
   }, []);
 
   // Function to trigger task list refresh when agent performs operations
-  const triggerTaskRefreshLocally = () => {
-    // This function triggers the event emitter to notify other components
+  const triggerTaskRefreshDirectly = () => {
     triggerTaskRefresh();
   };
 
@@ -369,6 +368,6 @@ export const useChatService = () => {
     deleteSession, // Add the deleteSession function to the return object
     updateSessionTitle, // Add the updateSessionTitle function to the return object
     formatDate,
-    triggerTaskRefresh: triggerTaskRefreshLocally,
+    triggerTaskRefresh: triggerTaskRefreshDirectly,
   };
 };

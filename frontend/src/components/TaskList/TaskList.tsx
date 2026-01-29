@@ -3,7 +3,7 @@ import { getTasks, Task } from '../../services/api'; // Import the API service a
 import TaskItem from '../TaskItem/TaskItem';
 import SearchBar from '../SearchFilter/SearchBar';
 import FilterControls, { FilterOptions } from '../SearchFilter/FilterControls';
-import { eventEmitter, TASK_REFRESH_EVENT } from '../../utils/eventEmitter';
+import { taskRefreshManager } from '../../utils/taskRefreshManager';
 
 // Define the props interface
 interface TaskListProps {
@@ -115,17 +115,13 @@ const TaskList = forwardRef<TaskListHandle, TaskListProps>(({ userId, onEditTask
     fetchFilteredTasks();
   }, [fetchFilteredTasks, userId]);
 
-  // Subscribe to task refresh events
+  // Subscribe to task refresh events using the global manager
   useEffect(() => {
-    const handleRefresh = () => {
-      fetchFilteredTasks();
-    };
-
-    eventEmitter.on(TASK_REFRESH_EVENT, handleRefresh);
+    const unsubscribe = taskRefreshManager.subscribe(fetchFilteredTasks);
 
     // Cleanup subscription on unmount
     return () => {
-      eventEmitter.off(TASK_REFRESH_EVENT, handleRefresh);
+      unsubscribe();
     };
   }, [fetchFilteredTasks]);
 
