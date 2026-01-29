@@ -3,6 +3,7 @@ import { getTasks, Task } from '../../services/api'; // Import the API service a
 import TaskItem from '../TaskItem/TaskItem';
 import SearchBar from '../SearchFilter/SearchBar';
 import FilterControls, { FilterOptions } from '../SearchFilter/FilterControls';
+import { eventEmitter, TASK_REFRESH_EVENT } from '../../utils/eventEmitter';
 
 // Define the props interface
 interface TaskListProps {
@@ -113,6 +114,20 @@ const TaskList = forwardRef<TaskListHandle, TaskListProps>(({ userId, onEditTask
 
     fetchFilteredTasks();
   }, [fetchFilteredTasks, userId]);
+
+  // Subscribe to task refresh events
+  useEffect(() => {
+    const handleRefresh = () => {
+      fetchFilteredTasks();
+    };
+
+    eventEmitter.on(TASK_REFRESH_EVENT, handleRefresh);
+
+    // Cleanup subscription on unmount
+    return () => {
+      eventEmitter.off(TASK_REFRESH_EVENT, handleRefresh);
+    };
+  }, [fetchFilteredTasks]);
 
   const handleSearchChange = (searchTerm: string) => {
     setSearchTerm(searchTerm);

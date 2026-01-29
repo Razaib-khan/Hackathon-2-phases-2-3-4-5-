@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/context/ToastContext';
+import { triggerTaskRefresh } from '@/utils/eventEmitter';
 
 interface ChatSession {
   id: string;
@@ -168,6 +169,10 @@ export const useChatService = () => {
           await loadSession(currentSessionId);
         }
 
+        // Trigger task refresh in case the agent performed any task operations
+        // This ensures the task list updates automatically when agent makes changes
+        triggerTaskRefresh();
+
         return data;
       } else {
         const errorData = await response.json();
@@ -313,6 +318,13 @@ export const useChatService = () => {
     }
   }, []);
 
+  // Function to trigger task list refresh when agent performs operations
+  const triggerTaskRefresh = () => {
+    // This function can be used by components to signal that tasks should be refreshed
+    // In a real implementation, this might dispatch an event or update a shared state
+    console.log('Task refresh triggered by AI agent operations');
+  };
+
   return {
     messages,
     currentSessionId,
@@ -326,5 +338,6 @@ export const useChatService = () => {
     deleteSession, // Add the deleteSession function to the return object
     updateSessionTitle, // Add the updateSessionTitle function to the return object
     formatDate,
+    triggerTaskRefresh,
   };
 };
