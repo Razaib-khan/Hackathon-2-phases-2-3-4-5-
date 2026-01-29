@@ -201,10 +201,9 @@ export const useChatService = () => {
           pattern.test(agentResponseContent)
         );
 
-        // Trigger task refresh if agent response suggests task operations were performed
-        if (hasTaskOperations) {
-          triggerTaskRefresh();
-        }
+        // Always trigger task refresh after agent operations since any tool usage
+        // might affect the task list - this ensures the UI stays in sync
+        triggerTaskRefresh();
 
         return data;
       } else {
