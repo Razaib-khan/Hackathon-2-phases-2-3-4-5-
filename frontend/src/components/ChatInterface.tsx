@@ -25,6 +25,7 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
     createNewSession,
     loadSession,
     loadSessions,
+    deleteSession,
     updateSessionTitle,
     formatDate
   } = useChatService();
@@ -90,18 +91,33 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
               >
                 {session.title.substring(0, 20)}{session.title.length > 20 ? '...' : ''}
               </button>
-              <button
-                onClick={() => {
-                  const newTitle = prompt("Rename this conversation:", session.title);
-                  if (newTitle) {
-                    updateSessionTitle(session.id, newTitle);
-                  }
-                }}
-                className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity bg-blue-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs hover:bg-blue-600"
-                title="Rename conversation"
-              >
-                ✏
-              </button>
+              <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const newTitle = prompt("Rename this conversation:", session.title);
+                    if (newTitle) {
+                      updateSessionTitle(session.id, newTitle);
+                    }
+                  }}
+                  className="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-blue-600"
+                  title="Rename conversation"
+                >
+                  ✏
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (confirm(`Are you sure you want to delete the conversation "${session.title}"?`)) {
+                      deleteSession(session.id);
+                    }
+                  }}
+                  className="bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                  title="Delete conversation"
+                >
+                  ×
+                </button>
+              </div>
             </div>
           ))}
         </div>
