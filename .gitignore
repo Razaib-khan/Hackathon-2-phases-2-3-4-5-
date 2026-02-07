@@ -98,6 +98,25 @@ pids
 coverage/
 *.lcov
 
+# Large binaries that shouldn't be committed
+kubectl
+minikube-linux-amd64
+*.tar.gz
+*.zip
+*.rar
+*.7z
+*.iso
+*.dmg
+*.exe
+*.deb
+*.rpm
+*.pkg
+
+# Specific large files
+kubectl
+minikube-linux-amd64
+hf_space_cloned
+
 # Temporary folders
 tmp/
 temp/
