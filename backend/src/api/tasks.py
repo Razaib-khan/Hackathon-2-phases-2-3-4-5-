@@ -1,11 +1,12 @@
 """
 Tasks API routes for the Speckit Plus Todo Application
-Handles CRUD operations for tasks with user isolation
+Handles CRUD operations for tasks with user isolation and Dapr integration
 """
 
 import uuid
 from datetime import datetime
 from typing import List, Optional
+import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlmodel import Session
@@ -24,10 +25,19 @@ from services.task_service import (
     get_tasks_for_user,
     toggle_task_completion,
     update_task,
+    create_recurring_task,
 )
 from utils.validation import validate_user_id, validate_task_id
 from utils.auth import get_current_user
 from middleware.security import limiter
+
+# Import Dapr dependencies if available
+try:
+    from dapr.clients import DaprClient
+    HAS_DAPR = True
+except ImportError:
+    HAS_DAPR = False
+    logging.warning("Dapr not available for tasks API")
 
 router = APIRouter()
 
@@ -115,6 +125,65 @@ def create_task_endpoint(
     # Create task using service
     try:
         task = create_task(session, str(user_uuid), task_data)
+
+        # If Dapr is available, publish an event via Dapr pub/sub
+        if HAS_DAPR:
+            try:
+                with DaprClient() as dapr_client:
+                    # Publish event to Dapr pub/sub
+                    dapr_client.publish_event(
+                        pubsub_name="kafka-pubsub",
+                        topic_name="task-events",
+                        data=task.dict(),
+                        metadata={"contentType": "application/json"}
+                    )
+            except Exception as e:
+                logging.error(f"Dapr publish event failed: {str(e)}")
+
+        return task
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@router.post("/{user_id}/recurring-tasks", response_model=TaskRead)
+def create_recurring_task_endpoint(
+    user_id: str,
+    task_data: TaskCreate,
+    recurrence_pattern: dict,
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
+    """
+    Create a new recurring task for a user
+    """
+    # Validate user_id format
+    user_uuid = validate_user_id(user_id)
+
+    # Verify that the requested user_id matches the authenticated user
+    if str(current_user.id) != str(user_uuid):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to create tasks for this user"
+        )
+
+    # Create recurring task using service
+    try:
+        task = create_recurring_task(session, str(user_uuid), task_data, recurrence_pattern)
+
+        # If Dapr is available, publish an event via Dapr pub/sub
+        if HAS_DAPR:
+            try:
+                with DaprClient() as dapr_client:
+                    # Publish event to Dapr pub/sub
+                    dapr_client.publish_event(
+                        pubsub_name="kafka-pubsub",
+                        topic_name="task-events",
+                        data=task.dict(),
+                        metadata={"contentType": "application/json"}
+                    )
+            except Exception as e:
+                logging.error(f"Dapr publish event failed: {str(e)}")
+
         return task
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))

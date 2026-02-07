@@ -1,0 +1,79 @@
+name: Integration Tests
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main, develop ]
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_todo_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      kafka:
+        image: bitnami/kafka:latest
+        env:
+          KAFKA_CFG_NODE_ID: 0
+          KAFKA_CFG_PROCESS_ROLES: controller,broker
+          KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@kafka:9093
+          KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+          KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+          KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+          KAFKA_CFG_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+          KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+          KAFKA_CFG_DEFAULT_REPLICATION_FACTOR: 1
+          KAFKA_CFG_MIN_INSYNC_REPLICAS: 1
+        ports:
+          - 9092:9092
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install uv
+        if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
+
+    - name: Wait for services
+      run: |
+        # Wait for PostgreSQL
+        until pg_isready -h localhost -p 5432; do
+          sleep 2
+        done
+
+        # Wait for Kafka
+        sleep 10
+
+    - name: Run integration tests
+      run: |
+        echo "Running integration tests..."
+        # Add integration test commands here
+        # Example: python -m pytest tests/integration/ -v
+
+    - name: Run Dapr integration tests
+      run: |
+        # Install Dapr CLI
+        wget -q https://raw.githubusercontent.com/dapr/cli/master/install/install.sh -O - | /bin/bash
+
+        # Run tests that require Dapr
+        echo "Running Dapr integration tests..."

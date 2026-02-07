@@ -1,0 +1,250 @@
+# AKS-specific configuration for todo-chatbot
+
+global:
+  imageRegistry: ""
+
+# Backend configuration for AKS
+backend:
+  replicaCount: 2
+  image:
+    repository: todo-chatbot-backend
+    pullPolicy: IfNotPresent
+    tag: ""
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+  podLabels: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  service:
+    type: LoadBalancer
+    port: 8000
+    targetPort: 8000
+
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: todo-app.westus2.cloudapp.azure.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: []
+    #  - secretName: todo-tls
+    #    hosts:
+    #      - todo-app.westus2.cloudapp.azure.com
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    # targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+# Frontend configuration for AKS
+frontend:
+  replicaCount: 2
+  image:
+    repository: todo-chatbot-frontend
+    pullPolicy: IfNotPresent
+    tag: ""
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+  podLabels: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  service:
+    type: LoadBalancer
+    port: 80
+    targetPort: 3000
+
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: todo-frontend.westus2.cloudapp.azure.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: []
+    #  - secretName: todo-frontend-tls
+    #    hosts:
+    #      - todo-frontend.westus2.cloudapp.azure.com
+
+  resources:
+    limits:
+      cpu: 300m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    # targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+# Database configuration for AKS (using Azure Database for PostgreSQL)
+database:
+  enabled: false  # Use external managed database
+  host: "todo-postgres.postgres.database.azure.com"
+  port: 5432
+  database: "tododb"
+  username: "todo_admin"
+  password: ""  # Will be provided via secret
+  sslmode: require
+
+# Kafka configuration for AKS (using Azure Event Hubs or external Kafka)
+kafka:
+  enabled: true
+  replicaCount: 3  # Higher availability in production
+  image:
+    repository: confluentinc/cp-kafka
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 9092
+  config:
+    num.partitions: 6
+    default.replication.factor: 3
+    min.insync.relicas: 2
+    offsets.topic.replication.factor: 3
+    transaction.state.log.replication.factor: 3
+    transaction.state.log.min.isr: 2
+
+# Zookeeper configuration for AKS
+zookeeper:
+  enabled: true
+  replicaCount: 3  # Higher availability in production
+  image:
+    repository: confluentinc/cp-zookeeper
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 2181
+
+# Dapr configuration for AKS
+dapr:
+  enabled: true
+  version: "1.11.0"
+  # Sidecar configuration
+  sidecar:
+    image:
+      repository: daprio/daprd
+      tag: "1.11.0"
+      pullPolicy: IfNotPresent
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+# Monitoring configuration for AKS
+monitoring:
+  enabled: true
+  prometheus:
+    enabled: true
+    persistentVolume:
+      enabled: true
+      size: 10Gi
+  grafana:
+    enabled: true
+    persistentVolume:
+      enabled: true
+      size: 5Gi
+  loki:
+    enabled: true
+    persistentVolume:
+      enabled: true
+      size: 10Gi
+  tempo:
+    enabled: true
+    persistentVolume:
+      enabled: true
+      size: 5Gi
+
+# Environment variables for AKS
+env:
+  # Backend environment variables
+  backend:
+    DATABASE_URL: "postgresql://todo_admin:$(TODO_POSTGRES_PASSWORD)@todo-postgres.postgres.database.azure.com:5432/tododb?sslmode=require"
+    AUTH_SECRET: ""  # Will be provided via secret
+    CORS_ORIGINS: "https://todo-frontend.westus2.cloudapp.azure.com,https://todo-app.westus2.cloudapp.azure.com"
+    # Kafka configuration for AKS
+    KAFKA_BOOTSTRAP_SERVERS: "kafka-service:9092"
+    KAFKA_TASK_EVENTS_TOPIC: "task-events"
+    KAFKA_REMINDERS_TOPIC: "reminders"
+    KAFKA_TASK_UPDATES_TOPIC: "task-updates"
+    KAFKA_CONSUMER_GROUP_ID: "todo-consumer-group-aks"
+
+  # Frontend environment variables
+  frontend:
+    NEXT_PUBLIC_API_URL: "https://todo-app.westus2.cloudapp.azure.com"
+    NEXT_PUBLIC_SSO_URL: "https://todo-app.westus2.cloudapp.azure.com"

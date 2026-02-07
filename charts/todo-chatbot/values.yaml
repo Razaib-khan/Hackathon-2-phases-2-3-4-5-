@@ -173,6 +173,107 @@ database:
   password: ""
   sslmode: require
 
+# Kafka configuration for local deployment
+kafka:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: confluentinc/cp-kafka
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 9092
+  config:
+    num.partitions: 3
+    default.replication.factor: 1
+    min.insync.replicas: 1
+    offsets.topic.replication.factor: 1
+    transaction.state.log.replication.factor: 1
+    transaction.state.log.min.isr: 1
+
+# Zookeeper configuration for Kafka (required)
+zookeeper:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: confluentinc/cp-zookeeper
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 2181
+
+# Dapr configuration for local deployment
+dapr:
+  enabled: true
+  version: "1.11.0"
+  # Sidecar configuration
+  sidecar:
+    image:
+      repository: daprio/daprd
+      tag: "1.11.0"
+      pullPolicy: IfNotPresent
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+# Monitoring configuration
+monitoring:
+  enabled: true
+  prometheus:
+    enabled: true
+    # Prometheus server configuration
+    server:
+      enabled: true
+      persistentVolume:
+        enabled: false
+  grafana:
+    enabled: true
+    # Grafana configuration
+    adminUser: "admin"
+    adminPassword: "admin123"
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: Prometheus
+            type: prometheus
+            url: http://prometheus-server:9090
+            access: proxy
+            isDefault: true
+          - name: Loki
+            type: loki
+            url: http://loki:3100
+            access: proxy
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+          - name: 'default'
+            orgId: 1
+            folder: ''
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/default
+  loki:
+    enabled: true
+    # Loki configuration
+    persistence:
+      enabled: false
+  tempo:
+    enabled: true  # Enable Tempo for distributed tracing
+    # Tempo configuration
+    storage:
+      trace:
+        backend: local
+
 # Environment variables
 env:
   # Backend environment variables
@@ -180,6 +281,12 @@ env:
     DATABASE_URL: ""
     AUTH_SECRET: "your-auth-secret-here"
     CORS_ORIGINS: "http://localhost:3000,http://frontend:3000"
+    # Kafka configuration
+    KAFKA_BOOTSTRAP_SERVERS: "kafka-service:9092"
+    KAFKA_TASK_EVENTS_TOPIC: "task-events"
+    KAFKA_REMINDERS_TOPIC: "reminders"
+    KAFKA_TASK_UPDATES_TOPIC: "task-updates"
+    KAFKA_CONSUMER_GROUP_ID: "todo-consumer-group"
     # Additional backend environment variables can be added here
 
   # Frontend environment variables

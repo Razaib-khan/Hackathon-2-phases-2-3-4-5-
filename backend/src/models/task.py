@@ -57,6 +57,13 @@ class Task(TaskBase, table=True):
     status: bool = Field(default=False, index=True)  # Add index for status filtering
     timestamp: datetime = Field(default_factory=datetime.utcnow, index=True)  # Add index for timestamp filtering
 
+    # Advanced features fields
+    due_date: Optional[datetime] = Field(default=None, index=True)  # Track task deadlines
+    reminder_time: Optional[datetime] = Field(default=None, index=True)  # Notification scheduling
+    is_recurring: bool = Field(default=False)  # Flag for recurring tasks
+    recurrence_pattern: Optional[dict] = Field(default=None, sa_column_kwargs={"type_": "json"})  # Flexible recurrence patterns
+    next_occurrence: Optional[datetime] = Field(default=None, index=True)  # For recurring task scheduling
+
     # Indexes for common query patterns
     __table_args__ = (
         {"extend_existing": True}

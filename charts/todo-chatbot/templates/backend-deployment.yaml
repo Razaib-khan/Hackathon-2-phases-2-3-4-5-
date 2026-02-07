@@ -16,6 +16,12 @@ spec:
       {{- with .Values.backend.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
+        {{- if .Values.dapr.enabled }}
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "todo-backend"
+        dapr.io/app-port: "{{ .Values.backend.service.port }}"
+        dapr.io/config: "dapr-config"
+        {{- end }}
       {{- end }}
       labels:
         {{- include "todo-chatbot.backend.selectorLabels" . | nindent 8 }}

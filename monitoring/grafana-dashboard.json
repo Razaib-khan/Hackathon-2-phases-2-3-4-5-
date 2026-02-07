@@ -1,0 +1,109 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "AIDO TODO Application Dashboard",
+    "tags": ["todo", "kafka", "dapr", "application"],
+    "style": "dark",
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Task Operations Overview",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "sum(todo_app_task_operations_total)",
+            "legendFormat": "Total Operations"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short"
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Active Tasks by Priority",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 6, "y": 0},
+        "targets": [
+          {
+            "expr": "todo_app_active_tasks_by_priority",
+            "legendFormat": "{{priority}}"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Kafka Topic Messages",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0},
+        "targets": [
+          {
+            "expr": "kafka_topic_partition_messages_total",
+            "legendFormat": "{{topic}}"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Request Latency",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(todo_app_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "P95 Latency"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(todo_app_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "P50 Latency"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "API Request Rate",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "targets": [
+          {
+            "expr": "rate(todo_app_requests_total[5m])",
+            "legendFormat": "{{method}} {{endpoint}}"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Dapr Sidecar Metrics",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+        "targets": [
+          {
+            "expr": "dapr_sidecar_uptime",
+            "legendFormat": "Sidecar Uptime ({{app_id}})"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Task Creation Over Time",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+        "targets": [
+          {
+            "expr": "increase(todo_app_tasks_created_total[1h])",
+            "legendFormat": "Tasks Created per Hour"
+          }
+        ]
+      }
+    ],
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "refresh": "5s"
+  }
+}

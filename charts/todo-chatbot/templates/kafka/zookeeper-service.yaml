@@ -1,0 +1,19 @@
+{{- if .Values.zookeeper.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "todo-chatbot.fullname" . }}-zookeeper
+  labels:
+    {{- include "todo-chatbot.labels" . | nindent 4 }}
+    app.kubernetes.io/component: zookeeper
+spec:
+  type: {{ .Values.zookeeper.service.type }}
+  ports:
+    - port: {{ .Values.zookeeper.service.port }}
+      targetPort: 2181
+      protocol: TCP
+      name: zookeeper
+  selector:
+    {{- include "todo-chatbot.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: zookeeper
+{{- end }}
