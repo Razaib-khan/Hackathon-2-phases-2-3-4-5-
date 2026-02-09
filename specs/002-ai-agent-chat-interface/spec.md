@@ -5,35 +5,6 @@
 **Status**: Draft
 **Input**: User description: "AI agent with MCP server to perform CRUD operations on tasks using existing endpoints, with floating chat widget and chat history persistence"
 
-## Clarifications
-
-### Session 2026-01-21
-
-- Q: What is the expected maximum number of concurrent chat sessions a single user should be able to have? → A: 10
-- Q: Should the AI agent tools handle single tasks, multiple tasks, or both? → A: Flexible - same tools handle both single and multiple tasks
-- Q: What level of user data isolation is required for chat history? → A: Strict isolation - users can only access their own chat history
-- Q: How should chat history be displayed to users? → A: Paginated - show recent conversations with pagination for older ones
-- Q: What authentication system should be used for AI agent communication? → A: Same JWT - use existing JWT token system for AI agent authentication
-
-## User Scenarios & Testing *(mandatory)*
-
-### User Story 1 - AI Agent Task Management (Priority: P1)
-
-Users can interact with an AI agent through a chat interface to perform CRUD operations on their tasks.
-
-**Why this priority**: Core functionality that adds AI-powered task management to the existing system, enhancing user productivity and experience.
-
-**Independent Test**: Can be fully tested by chatting with the AI agent to create, read, update, delete, and update status of tasks while delivering complete AI-assisted task management functionality.
-
-**Acceptance Scenarios**:
-
-1. **Given** user opens the chat interface, **When** user asks the AI agent to create a task, **Then** agent creates the task using create_tasks tool and confirms creation to user
-2. **Given** user has tasks in their list, **When** user asks the AI agent to show their tasks, **Then** agent retrieves tasks using read_tasks tool and displays them in chat
-3. **Given** user has a task, **When** user asks the AI agent to update the task, **Then** agent updates the task using update_tasks tool and confirms changes to user
-4. **Given** user has tasks, **When** user asks the AI agent to delete tasks, **Then** agent deletes the tasks using delete_tasks tool and confirms deletion to user
-5. **Given** user has tasks, **When** user asks the AI agent to update task status, **Then** agent updates task status using update_tasks_status tool and confirms changes to user
-
----
 
 ### User Story 2 - Chat Interface and Widget (Priority: P1)
 
