@@ -1,6 +1,6 @@
 # Quickstart: AI Agent Chat Interface for AIDO TODO Application
 
-## Development Setup
+## Development Environment Setup
 
 ### Prerequisites
 - Node.js 18+ for frontend development
@@ -47,7 +47,7 @@ cd backend/src/mcp_server
 python server.py
 ```
 
-## Key Integration Points
+## Key Features Walkthrough
 
 ### 1. Chat Widget Integration
 The floating chat widget is integrated into the main layout and can be accessed from any page. It communicates with the backend via the `/api/chat/*` endpoints.
@@ -60,21 +60,7 @@ The AI agent connects to the existing task management system through the MCP ser
 - Chat sessions and task operations respect user isolation
 - All AI agent operations are authenticated and authorized
 
-## Testing
-
-### Backend Tests
-```bash
-cd backend
-pytest tests/
-```
-
-### Frontend Tests
-```bash
-cd frontend
-npm test
-```
-
-## API Endpoints
+## API Endpoints Reference
 
 ### Chat Interface
 - `GET /api/chat/sessions` - Get user's chat sessions
@@ -95,14 +81,3 @@ npm test
 - Check the task_operation_logs table for operation history
 - Monitor the MCP server logs for communication issues
 - Verify that all task operations respect user isolation
-
-## Deployment
-
-### Frontend
-Deploy to GitHub Pages with proper environment configuration for production API endpoints.
-
-### Backend
-Deploy to Hugging Face Spaces with MCP server integration.
-
-### Database
-Use Neon Serverless PostgreSQL for scalable database hosting with proper security configurations.
